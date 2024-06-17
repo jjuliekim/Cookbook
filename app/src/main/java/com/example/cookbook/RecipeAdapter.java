@@ -78,7 +78,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
             nameText = itemView.findViewById(R.id.recipeNameText);
             authorText = itemView.findViewById(R.id.recipeAuthorText);
             numberStepsText = itemView.findViewById(R.id.recipeStepsNumberText);
-            heartImage - itemView.findViewById(R.id.imageView);
+            heartImage = itemView.findViewById(R.id.imageView);
         }
     }
 
