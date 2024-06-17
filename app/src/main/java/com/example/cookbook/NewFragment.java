@@ -9,12 +9,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class NewFragment extends Fragment {
     private EditText recipeInputText;
     private TextView searchRecipeText;
+    private LinearLayout ingredientsLayout;
+    private LinearLayout stepsLayout;
+    private EditText firstIngredientText;
+    private EditText firstStepText;
 
     public NewFragment() {}
 
@@ -32,10 +37,15 @@ public class NewFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_new, container, false);
         recipeInputText = view.findViewById(R.id.recipeInputNameText);
         searchRecipeText = view.findViewById(R.id.searchRecipeText);
-        searchRecipeText.setOnClickListener(v -> searchRecipe());
         Button saveButton = view.findViewById(R.id.saveButton);
         Button addIngredientButton = view.findViewById(R.id.addIngredientButton);
         Button addStepButton = view.findViewById(R.id.addStepButton);
+        ingredientsLayout = view.findViewById(R.id.ingredientsLayout);
+        stepsLayout = view.findViewById(R.id.stepsLayout);
+        firstIngredientText = view.findViewById(R.id.firstIngredientText);
+        firstStepText = view.findViewById(R.id.firstStepText);
+        // actions
+        searchRecipeText.setOnClickListener(v -> searchRecipe());
         saveButton.setOnClickListener(v -> saveRecipe());
         addIngredientButton.setOnClickListener(v -> addIngredient());
         addStepButton.setOnClickListener(v -> addStep());
@@ -59,10 +69,26 @@ public class NewFragment extends Fragment {
     }
 
     // add ingredient input line
-
+    private void addIngredient() {
+        if (!firstIngredientText.getText().toString().isEmpty()) {
+            EditText ingredientField = new EditText(getContext());
+            ingredientField.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 48));
+            ingredientField.setHint("Enter Ingredient");
+            ingredientsLayout.addView(ingredientField);
+        }
+    }
 
     // add step input line
-
+    private void addStep() {
+        if (!firstStepText.getText().toString().isEmpty()) {
+            EditText stepField = new EditText(getContext());
+            stepField.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 48));
+            stepField.setHint("Enter Step");
+            stepsLayout.addView(stepField);
+        }
+    }
 
 
 }

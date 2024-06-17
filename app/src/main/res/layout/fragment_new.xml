@@ -2,7 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:background="#F3E7DB"
+    android:padding="20dp">
 
     <LinearLayout
         android:id="@+id/mainLayout"
@@ -22,6 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/autocomplete_recipe_info"
+            android:textColor="#798945"
             android:layout_gravity="end"/>
 
         <TextView
@@ -35,12 +37,22 @@
             android:id="@+id/ingredientsLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:orientation="vertical" >
+
+            <EditText
+                android:id="@+id/firstIngredientText"
+                android:layout_width="match_parent"
+                android:layout_height="48sp"
+                android:hint="@string/enter_ingredient"
+                android:ems="10"
+                android:inputType="text" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/addIngredientButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="#60310D"
             android:text="@string/add_ingredient" />
 
         <TextView
@@ -54,18 +66,29 @@
             android:id="@+id/stepsLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:orientation="vertical" >
+
+            <EditText
+                android:id="@+id/firstStepText"
+                android:layout_width="match_parent"
+                android:layout_height="48sp"
+                android:ems="10"
+                android:inputType="text"
+                android:hint="@string/enter_step" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/addStepButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="#60310D"
             android:text="@string/add_step" />
 
         <Button
             android:id="@+id/saveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="#60310D"
             android:text="@string/save_amp_upload_recipe"/>
 
     </LinearLayout>

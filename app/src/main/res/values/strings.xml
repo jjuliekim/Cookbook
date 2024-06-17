@@ -18,4 +18,6 @@
     <string name="save_amp_upload_recipe"><![CDATA[Save & Upload Recipe]]></string>
     <string name="add_step">Add Step</string>
     <string name="add_ingredient">Add Ingredient</string>
+    <string name="enter_ingredient">Enter Ingredient</string>
+    <string name="enter_step">Enter Step</string>
 </resources>
