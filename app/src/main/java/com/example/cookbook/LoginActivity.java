@@ -1,6 +1,11 @@
 package com.example.cookbook;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,7 +13,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class LoginActivity extends AppCompatActivity {
+    private EditText nameText;
+    private EditText passwordText;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,5 +31,69 @@ public class LoginActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        mAuth = FirebaseAuth.getInstance();
+
+        // xml contents
+        Button loginButton = findViewById(R.id.loginButton);
+        Button signupButton = findViewById(R.id.signupButton);
+        nameText = findViewById(R.id.nameEditText);
+        passwordText = findViewById(R.id.passwordEditText);
+
+        // button actions
+        loginButton.setOnClickListener(v -> loginUser());
+        signupButton.setOnClickListener(v -> signupUser());
+    }
+
+    // new user process
+    private void signupUser() {
+        String name = nameText.getText().toString();
+        String password = passwordText.getText().toString();
+        if (name.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Invalid Entries", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        mAuth.createUserWithEmailAndPassword(name + "@email.com", password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // sign up success
+                        Log.i("HERE LOGIN", "user created: " + name);
+                        Toast.makeText(this, "Creating Account...", Toast.LENGTH_SHORT).show();
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        Intent nextIntent = new Intent(LoginActivity.this, MainActivity.class);
+                        nextIntent.putExtra("user", user);
+                        startActivity(nextIntent);
+                    } else {
+                        // sign up failed
+                        Log.i("HERE LOGIN", "registration failed");
+                        Toast.makeText(LoginActivity.this, "Registration Failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    // verify user/pw and log in
+    private void loginUser() {
+        String name = nameText.getText().toString();
+        String password = passwordText.getText().toString();
+        if (name.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Invalid Entries", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        mAuth.signInWithEmailAndPassword(name + "@email.com", password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // log in success
+                        Log.i("HERE LOGIN", "logging in: " + name);
+                        Toast.makeText(this, "Logging In...", Toast.LENGTH_SHORT).show();
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        Intent nextIntent = new Intent(LoginActivity.this, MainActivity.class);
+                        nextIntent.putExtra("user", user);
+                        startActivity(nextIntent);
+                    } else {
+                        // log in failed
+                        Log.i("HERE LOGIN", "login failed");
+                        Toast.makeText(this, "Incorrect Password", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
