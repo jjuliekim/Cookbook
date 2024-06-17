@@ -15,4 +15,5 @@
     <string name="autocomplete_recipe_info">Autocomplete Recipe Info</string>
     <string name="ingredients">Ingredients</string>
     <string name="steps">Steps</string>
+    <string name="save_amp_upload_recipe"><![CDATA[Save & Upload Recipe]]></string>
 </resources>
