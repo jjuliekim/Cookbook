@@ -5,13 +5,17 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F3E7DB"
     tools:context=".MainActivity">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/topMenuTabs"
         android:backgroundTint="#FFFDF7"
         android:layout_width="match_parent"
-        android:layout_height="70dp">
+        android:layout_height="70dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
