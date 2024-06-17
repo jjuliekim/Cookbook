@@ -34,7 +34,11 @@ public class NewFragment extends Fragment {
         searchRecipeText = view.findViewById(R.id.searchRecipeText);
         searchRecipeText.setOnClickListener(v -> searchRecipe());
         Button saveButton = view.findViewById(R.id.saveButton);
+        Button addIngredientButton = view.findViewById(R.id.addIngredientButton);
+        Button addStepButton = view.findViewById(R.id.addStepButton);
         saveButton.setOnClickListener(v -> saveRecipe());
+        addIngredientButton.setOnClickListener(v -> addIngredient());
+        addStepButton.setOnClickListener(v -> addStep());
         return view;
     }
 
@@ -53,5 +57,12 @@ public class NewFragment extends Fragment {
     private void saveRecipe() {
 
     }
+
+    // add ingredient input line
+
+
+    // add step input line
+
+
 
 }

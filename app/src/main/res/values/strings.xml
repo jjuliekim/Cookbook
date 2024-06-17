@@ -12,8 +12,10 @@
     <string name="textview">TextView</string>
     <string name="line">______________________</string>
     <string name="recipe_name">Recipe Name</string>
-    <string name="autocomplete_recipe_info">Autocomplete Recipe Info</string>
+    <string name="autocomplete_recipe_info"><u>Autocomplete Recipe Info</u></string>
     <string name="ingredients">Ingredients</string>
     <string name="steps">Steps</string>
     <string name="save_amp_upload_recipe"><![CDATA[Save & Upload Recipe]]></string>
+    <string name="add_step">Add Step</string>
+    <string name="add_ingredient">Add Ingredient</string>
 </resources>

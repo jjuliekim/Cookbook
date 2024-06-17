@@ -1,52 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NewFragment">
+    android:padding="16dp">
 
     <LinearLayout
+        android:id="@+id/mainLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="20dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <EditText
             android:id="@+id/recipeInputNameText"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:ems="10"
-            android:inputType="text"
-            android:textSize="24sp"
+            android:layout_height="48sp"
+            android:textSize="22sp"
             android:hint="@string/recipe_name" />
 
         <TextView
             android:id="@+id/searchRecipeText"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/autocomplete_recipe_info"
-            android:gravity="end"/>
+            android:layout_gravity="end"/>
 
         <TextView
-            android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:text="@string/ingredients" />
+            android:text="@string/ingredients"
+            android:textSize="20sp"
+            android:paddingTop="8dp" />
+
+        <LinearLayout
+            android:id="@+id/ingredientsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <Button
+            android:id="@+id/addIngredientButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_ingredient" />
 
         <TextView
-            android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:text="@string/steps" />
+            android:text="@string/steps"
+            android:textSize="20sp"
+            android:paddingTop="8dp" />
+
+        <LinearLayout
+            android:id="@+id/stepsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <Button
+            android:id="@+id/addStepButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_step" />
 
         <Button
             android:id="@+id/saveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/save_amp_upload_recipe" />
-
+            android:text="@string/save_amp_upload_recipe"/>
 
     </LinearLayout>
-</FrameLayout>
+</ScrollView>
