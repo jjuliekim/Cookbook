@@ -8,7 +8,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+
+import java.util.ArrayList;
+
 public class HomeFragment extends Fragment {
+    private FirebaseUser user;
+    private RecipeAdapter recipeAdapter;
+    private DatabaseReference recipeDatabase;
+    private ArrayList<Recipe> recipeList;
 
     public HomeFragment() {}
 

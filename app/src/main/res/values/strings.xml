@@ -9,4 +9,6 @@
     <string name="settings">Settings</string>
     <string name="newText">New</string>
     <string name="explore">Explore</string>
+    <string name="textview">TextView</string>
+    <string name="line">______________________</string>
 </resources>
