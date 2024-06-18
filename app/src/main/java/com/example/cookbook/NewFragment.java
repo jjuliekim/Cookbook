@@ -201,7 +201,11 @@ public class NewFragment extends Fragment {
                     String instructions = meal.getString("strInstructions");
                     String[] stepsArray = instructions.split("\r\n");
                     ArrayList<String> stepsList = new ArrayList<>();
-                    Collections.addAll(stepsList, stepsArray);
+                    for (String step : stepsArray) {
+                        if (step != null && !step.isEmpty()) {
+                            stepsList.add(step);
+                        }
+                    }
                     ArrayList<String> ingredients = new ArrayList<>();
                     for (int i = 1; i < 21; i++) {
                         String ingredient = meal.getString("strIngredient" + i);
