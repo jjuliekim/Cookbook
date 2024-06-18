@@ -3,79 +3,65 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:padding="10dp">
 
-    <TableLayout
-        android:id="@+id/tableLayout"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/recipeNameText"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="1dp"
-        android:layout_marginTop="1dp"
-        android:padding="10dp"
+        android:padding="5dp"
+        android:text="@string/textview"
+        android:textSize="22sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imageView"
+        app:layout_constraintBottom_toTopOf="@+id/recipeAuthorText" />
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="10dp"
+        tools:srcCompat="@tools:sample/avatars"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/recipeNameText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="5dp"
-                android:text="@string/textview"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+    <TextView
+        android:id="@+id/recipeAuthorText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="@string/textview"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recipeNameText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/recipeStepsNumberText" />
 
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginEnd="10dp"
-                tools:srcCompat="@tools:sample/avatars" />
-        </TableRow>
+    <TextView
+        android:id="@+id/recipeStepsNumberText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="@string/textview"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recipeAuthorText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/textLine" />
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/recipeAuthorText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:text="@string/textview"
-                android:textSize="18sp" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/recipeStepsNumberText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:text="@string/textview"
-                android:textSize="18sp" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/textLine"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:text="@string/line"
-                android:textSize="18sp" />
-        </TableRow>
-
-    </TableLayout>
+    <TextView
+        android:id="@+id/textLine"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="@string/line"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recipeStepsNumberText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
