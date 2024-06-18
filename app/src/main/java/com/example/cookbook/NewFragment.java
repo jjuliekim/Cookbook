@@ -90,7 +90,7 @@ public class NewFragment extends Fragment {
             return;
         }
         // search recipe API
-        String searchURL = "www.themealdb.com/api/json/v1/1/search.php?s=" + recipeName;
+        String searchURL = "https://www.themealdb.com/api/json/v1/1/search.php?s=" + recipeName;
         ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
@@ -144,7 +144,7 @@ public class NewFragment extends Fragment {
                 Toast.makeText(getContext(), "Failed to retrieve user data", Toast.LENGTH_SHORT).show();
             }
         });
-        Recipe recipe = new Recipe(recipeName, user.getUid(), ingredients, steps, new ArrayList<>(), userGroups);
+        Recipe recipe = new Recipe(recipeName, user.getDisplayName(), ingredients, steps, new ArrayList<>(), userGroups);
         databaseReference.push().setValue(recipe).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Log.i("HERE NEW", "recipe saved");
@@ -163,8 +163,7 @@ public class NewFragment extends Fragment {
     private void addIngredient() {
         if (!firstIngredientText.getText().toString().isEmpty()) {
             EditText ingredientField = new EditText(getContext());
-            ingredientField.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, 48));
+            ingredientField.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             ingredientField.setHint("Enter Ingredient");
             ingredientsLayout.addView(ingredientField);
         }
@@ -174,8 +173,7 @@ public class NewFragment extends Fragment {
     private void addStep() {
         if (!firstStepText.getText().toString().isEmpty()) {
             EditText stepField = new EditText(getContext());
-            stepField.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, 48));
+            stepField.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             stepField.setHint("Enter Step");
             stepsLayout.addView(stepField);
         }
@@ -205,7 +203,7 @@ public class NewFragment extends Fragment {
                             ingredients.add(ingredient);
                         }
                     }
-                    Recipe recipe = new Recipe(recipeInputText.getText().toString(), user.getUid(),
+                    Recipe recipe = new Recipe(recipeInputText.getText().toString(), user.getDisplayName(),
                             ingredients, stepsList, new ArrayList<>(), new ArrayList<>());
                     databaseReference.push().setValue(recipe).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {

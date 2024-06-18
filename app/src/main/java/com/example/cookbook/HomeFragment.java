@@ -65,7 +65,7 @@ public class HomeFragment extends Fragment {
                 try {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Recipe recipe = snapshot.getValue(Recipe.class);
-                        if (recipe.getUser().equals(user.getUid())) {
+                        if (recipe.getUser().equals(user.getDisplayName())) {
                             recipeList.add(recipe);
                         }
                     }
@@ -78,8 +78,8 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.i("HERE HOME", "failed to load places");
-                Toast.makeText(getContext(), "failed to load places", Toast.LENGTH_SHORT).show();
+                Log.i("HERE HOME", "failed to load recipes");
+                Toast.makeText(getContext(), "failed to load recipes", Toast.LENGTH_SHORT).show();
             }
         });
     }
