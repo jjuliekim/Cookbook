@@ -68,7 +68,11 @@ public class HomeFragment extends Fragment {
                 if (user != null) {
                     userName = user.getName();
                     Log.i("HERE NEW", "fetched username: " + userName);
-                    fetchRecipesFromUser();
+                    try {
+                        fetchRecipesFromUser();
+                    } catch (Exception e) {
+                        Log.i("HERE HOME", "fetching recipes: " + e.getMessage());
+                    }
                 }
             }
 
@@ -86,12 +90,17 @@ public class HomeFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 recipeList = new ArrayList<>();
                 try {
-                    Log.i("HERE HOME", "username: " + userName);
+                    Log.i("HERE HOME", "username to fetch from: " + userName);
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Recipe recipe = snapshot.getValue(Recipe.class);
-                        Log.i("HERE HOME", "recipe name: " + recipe.getUser());
-                        if (recipe.getUser().equals(userName)) {
-                            recipeList.add(recipe);
+                        if (recipe != null && recipe.getUser() != null) {
+                            Log.i("HERE HOME", "recipe name check: " + recipe.getUser());
+                            if (recipe.getUser().equals(userName)) {
+                                recipeList.add(recipe);
+                                Log.i("HERE HOME", "added recipe: " + recipe.getName());
+                            }
+                        } else {
+                            Log.i("HERE HOME", "recipe or recipe user is null");
                         }
                     }
                     recipeAdapter.updateRecipes(recipeList);

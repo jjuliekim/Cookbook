@@ -221,6 +221,7 @@ public class NewFragment extends Fragment {
                             Intent nextIntent = new Intent(getActivity(), DetailsActivity.class);
                             nextIntent.putExtra("recipe", recipe);
                             startActivity(nextIntent);
+                            recipeInputText.setText("");
                         } else {
                             Log.i("HERE NEW", "recipe failed to add");
                             Toast.makeText(getContext(), "Failed to Add Recipe", Toast.LENGTH_SHORT).show();

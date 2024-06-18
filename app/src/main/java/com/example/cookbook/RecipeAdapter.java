@@ -28,13 +28,13 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
     @NonNull
     @Override
-    public RecipeAdapter.RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recipe, parent, false);
         return new RecipeViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecipeAdapter.RecipeViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
         Recipe recipe = recipeList.get(position);
         if (recipe != null) {
             holder.nameText.setText(recipe.getName());
@@ -44,6 +44,9 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user != null) {
                 ArrayList<String> favorites = recipe.getFavorited();
+                if (favorites == null) {
+                    favorites = new ArrayList<>();
+                }
                 if (favorites.contains(user.getUid())) {
                     holder.heartImage.setImageResource(R.drawable.heart_colored);
                 } else {
@@ -72,11 +75,13 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     // update list
     public void updateRecipes(ArrayList<Recipe> updatedList) {
         if (updatedList != null) {
-            recipeList.clear();
-            recipeList.addAll(updatedList);
-            notifyDataSetChanged();
-        } else {
-            Log.i("HERE ADAPTER", "updateRecipes: updatedList is null.");
+            try {
+                recipeList.clear();
+                recipeList.addAll(updatedList);
+                notifyDataSetChanged();
+            } catch (Exception e) {
+                Log.i("HERE ADAPTER", "updateRecipes: " + e.getMessage());
+            }
         }
     }
 
