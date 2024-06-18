@@ -28,6 +28,7 @@ public class HomeFragment extends Fragment {
     private RecipeAdapter recipeAdapter;
     private DatabaseReference recipeDatabase;
     private ArrayList<Recipe> recipeList;
+    private String userName;
 
     public HomeFragment() {}
 
@@ -39,6 +40,7 @@ public class HomeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         user = FirebaseAuth.getInstance().getCurrentUser();
+        userName = getArguments().getString("name");
     }
 
     @Override
@@ -50,6 +52,7 @@ public class HomeFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(recipeAdapter);
+        Log.i("HERE HOME", "username: " + userName);
 
         fetchRecipesFromUser();
 
@@ -65,7 +68,8 @@ public class HomeFragment extends Fragment {
                 try {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Recipe recipe = snapshot.getValue(Recipe.class);
-                        if (recipe.getUser().equals(user.getUid())) {
+                        Log.i("HERE HOME", "recipe name: " + recipe.getUser());
+                        if (recipe.getUser().equals(userName)) {
                             recipeList.add(recipe);
                         }
                     }

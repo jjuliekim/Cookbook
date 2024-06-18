@@ -42,7 +42,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         // if in favorites, set image to filled in
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         ArrayList<String> favorites = recipe.getFavorited();
-        if (favorites != null && !favorites.contains(user.getUid())) {
+        if (favorites.isEmpty() || !favorites.contains(user.getUid())) {
             holder.heartImage.setImageResource(R.drawable.heart);
         } else {
             holder.heartImage.setImageResource(R.drawable.heart_colored);

@@ -30,10 +30,12 @@ public class MainActivity extends AppCompatActivity {
 
         Intent myIntent = getIntent();
         FirebaseUser user = myIntent.getParcelableExtra("user");
+        String name = myIntent.getStringExtra("name");
 
         // initial fragment
         bundle = new Bundle();
         bundle.putParcelable("user", user);
+        bundle.putString("name", name);
         replaceFragment(HomeFragment.newInstance());
 
         // action on selected tab

@@ -7,7 +7,6 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -36,7 +35,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class NewFragment extends Fragment {
     private EditText recipeInputText;
@@ -47,7 +45,7 @@ public class NewFragment extends Fragment {
     private FirebaseUser user;
     private DatabaseReference databaseReference;
     private ArrayList<String> userGroups;
-    private DatabaseReference userReference;
+    private String userName;
 
     public NewFragment() {
     }
@@ -60,8 +58,9 @@ public class NewFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         user = FirebaseAuth.getInstance().getCurrentUser();
+        userName = getArguments().getString("name");
+        Log.i("HERE NEW", "name: " + userName);
         databaseReference = FirebaseDatabase.getInstance().getReference("recipes");
-        userReference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
         userGroups = new ArrayList<>();
     }
 
@@ -133,34 +132,17 @@ public class NewFragment extends Fragment {
                 return;
             }
         }
-        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-        Log.i("HERE NEW", "saving recipe to " + user.getUid());
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                User userData = dataSnapshot.getValue(User.class);
-                if (userData != null) {
-                    String displayName = userData.getName();
-                    Recipe recipe = new Recipe(recipeName, displayName, ingredients, steps, new ArrayList<>(), userGroups);
-                    databaseReference.push().setValue(recipe).addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            Log.i("HERE NEW", "recipe saved");
-                            Toast.makeText(getContext(), "Recipe Saved", Toast.LENGTH_SHORT).show();
-                            Intent nextIntent = new Intent(getActivity(), DetailsActivity.class);
-                            nextIntent.putExtra("recipe", recipe);
-                            startActivity(nextIntent);
-                        } else {
-                            Log.i("HERE NEW", "recipe failed to add");
-                            Toast.makeText(getContext(), "Failed to Add Recipe", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } else {
-                    Toast.makeText(getContext(), "Failed to retrieve user data", Toast.LENGTH_SHORT).show();
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getContext(), "Failed to retrieve user data", Toast.LENGTH_SHORT).show();
+        Recipe recipe = new Recipe(recipeName, userName, ingredients, steps, new ArrayList<>(), userGroups);
+        databaseReference.push().setValue(recipe).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Log.i("HERE NEW", "recipe saved");
+                Toast.makeText(getContext(), "Recipe Saved", Toast.LENGTH_SHORT).show();
+                Intent nextIntent = new Intent(getActivity(), DetailsActivity.class);
+                nextIntent.putExtra("recipe", recipe);
+                startActivity(nextIntent);
+            } else {
+                Log.i("HERE NEW", "recipe failed to add");
+                Toast.makeText(getContext(), "Failed to Add Recipe", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -213,33 +195,18 @@ public class NewFragment extends Fragment {
                             ingredients.add(ingredient);
                         }
                     }
-                    userReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            User userData = dataSnapshot.getValue(User.class);
-                            if (userData != null) {
-                                String displayName = userData.getName();
-                                Recipe recipe = new Recipe(recipeInputText.getText().toString(), displayName,
-                                        ingredients, stepsList, new ArrayList<>(), new ArrayList<>());
-                                databaseReference.push().setValue(recipe).addOnCompleteListener(task -> {
-                                    if (task.isSuccessful()) {
-                                        Log.i("HERE NEW", "recipe saved");
-                                        Toast.makeText(getContext(), "Recipe Saved", Toast.LENGTH_SHORT).show();
-                                        Intent nextIntent = new Intent(getActivity(), DetailsActivity.class);
-                                        nextIntent.putExtra("recipe", recipe);
-                                        startActivity(nextIntent);
-                                    } else {
-                                        Log.i("HERE NEW", "recipe failed to add");
-                                        Toast.makeText(getContext(), "Failed to Add Recipe", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            } else {
-                                Toast.makeText(getContext(), "Failed to retrieve user data", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Toast.makeText(getContext(), "Failed to retrieve user data", Toast.LENGTH_SHORT).show();
+                    Recipe recipe = new Recipe(recipeInputText.getText().toString(), userName,
+                            ingredients, stepsList, new ArrayList<>(), new ArrayList<>());
+                    databaseReference.push().setValue(recipe).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Log.i("HERE NEW", "recipe saved");
+                            Toast.makeText(getContext(), "Recipe Saved", Toast.LENGTH_SHORT).show();
+                            Intent nextIntent = new Intent(getActivity(), DetailsActivity.class);
+                            nextIntent.putExtra("recipe", recipe);
+                            startActivity(nextIntent);
+                        } else {
+                            Log.i("HERE NEW", "recipe failed to add");
+                            Toast.makeText(getContext(), "Failed to Add Recipe", Toast.LENGTH_SHORT).show();
                         }
                     });
                 } else {

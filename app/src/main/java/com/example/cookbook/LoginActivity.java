@@ -69,6 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                         userRef.setValue(newUser);
                         Intent nextIntent = new Intent(LoginActivity.this, MainActivity.class);
                         nextIntent.putExtra("user", user);
+                        nextIntent.putExtra("name", name);
                         startActivity(nextIntent);
                     } else {
                         // sign up failed
@@ -95,6 +96,7 @@ public class LoginActivity extends AppCompatActivity {
                         FirebaseUser user = mAuth.getCurrentUser();
                         Intent nextIntent = new Intent(LoginActivity.this, MainActivity.class);
                         nextIntent.putExtra("user", user);
+                        nextIntent.putExtra("name", name);
                         startActivity(nextIntent);
                     } else {
                         // log in failed
