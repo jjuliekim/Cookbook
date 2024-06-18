@@ -113,7 +113,7 @@ public class NewFragment extends Fragment {
         for (int i = 0; i < ingredientsLayout.getChildCount(); i++) {
             EditText field = (EditText) ingredientsLayout.getChildAt(i);
             String ingredient = field.getText().toString();
-            if (!ingredient.isEmpty()) {
+            if (!ingredient.isEmpty() && !ingredient.equals("null")) {
                 ingredients.add(ingredient);
             } else {
                 Toast.makeText(getContext(), "Enter Ingredients", Toast.LENGTH_SHORT).show();
@@ -123,7 +123,7 @@ public class NewFragment extends Fragment {
         for (int i = 0; i < stepsLayout.getChildCount(); i++) {
             EditText field = (EditText) stepsLayout.getChildAt(i);
             String step = field.getText().toString();
-            if (!step.isEmpty()) {
+            if (!step.isEmpty() && !step.equals("null")) {
                 steps.add(step);
             } else {
                 Toast.makeText(getContext(), "Enter Steps", Toast.LENGTH_SHORT).show();
@@ -131,6 +131,7 @@ public class NewFragment extends Fragment {
             }
         }
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+        Log.i("HERE NEW", "saving recipe to " + user.getUid());
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -144,7 +145,7 @@ public class NewFragment extends Fragment {
                 Toast.makeText(getContext(), "Failed to retrieve user data", Toast.LENGTH_SHORT).show();
             }
         });
-        Recipe recipe = new Recipe(recipeName, user.getDisplayName(), ingredients, steps, new ArrayList<>(), userGroups);
+        Recipe recipe = new Recipe(recipeName, user.getUid(), ingredients, steps, new ArrayList<>(), userGroups);
         databaseReference.push().setValue(recipe).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Log.i("HERE NEW", "recipe saved");
@@ -203,7 +204,7 @@ public class NewFragment extends Fragment {
                             ingredients.add(ingredient);
                         }
                     }
-                    Recipe recipe = new Recipe(recipeInputText.getText().toString(), user.getDisplayName(),
+                    Recipe recipe = new Recipe(recipeInputText.getText().toString(), user.getUid(),
                             ingredients, stepsList, new ArrayList<>(), new ArrayList<>());
                     databaseReference.push().setValue(recipe).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {

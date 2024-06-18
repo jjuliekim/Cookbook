@@ -1,6 +1,8 @@
 package com.example.cookbook;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,5 +22,10 @@ public class DetailsActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        Intent myIntent = getIntent();
+        Recipe recipe = myIntent.getParcelableExtra("recipe");
+        TextView textView = findViewById(R.id.textView);
+        textView.setText(recipe.getName());
     }
 }

@@ -65,7 +65,7 @@ public class HomeFragment extends Fragment {
                 try {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Recipe recipe = snapshot.getValue(Recipe.class);
-                        if (recipe.getUser().equals(user.getDisplayName())) {
+                        if (recipe.getUser().equals(user.getUid())) {
                             recipeList.add(recipe);
                         }
                     }
