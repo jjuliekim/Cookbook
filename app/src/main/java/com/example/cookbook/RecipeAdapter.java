@@ -40,7 +40,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
             holder.nameText.setText(recipe.getName());
             holder.authorText.setText(String.format("Created by: %s", recipe.getUser()));
             holder.numberStepsText.setText(String.format("# Steps: %d", recipe.getSteps().size()));
-
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user != null) {
                 ArrayList<String> favorites = recipe.getFavorited();
@@ -52,11 +51,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                 } else {
                     holder.heartImage.setImageResource(R.drawable.heart);
                 }
-            } else {
-                holder.heartImage.setImageResource(R.drawable.heart);
-                Log.i("HERE ADAPTER", "FirebaseUser is null.");
             }
-
             holder.itemView.setOnClickListener(v -> {
                 Intent nextIntent = new Intent(context, DetailsActivity.class);
                 nextIntent.putExtra("recipe", recipe);
@@ -75,13 +70,9 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     // update list
     public void updateRecipes(ArrayList<Recipe> updatedList) {
         if (updatedList != null) {
-            try {
-                recipeList.clear();
-                recipeList.addAll(updatedList);
-                notifyDataSetChanged();
-            } catch (Exception e) {
-                Log.i("HERE ADAPTER", "updateRecipes: " + e.getMessage());
-            }
+            recipeList.clear();
+            recipeList.addAll(updatedList);
+            notifyDataSetChanged();
         }
     }
 
@@ -97,9 +88,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
             authorText = itemView.findViewById(R.id.recipeAuthorText);
             numberStepsText = itemView.findViewById(R.id.recipeStepsNumberText);
             heartImage = itemView.findViewById(R.id.imageView);
-            if (nameText == null || authorText == null || numberStepsText == null || heartImage == null) {
-                Log.i("HERE ADAPTER", "View initialization failed.");
-            }
         }
     }
 

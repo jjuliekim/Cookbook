@@ -68,11 +68,9 @@ public class HomeFragment extends Fragment {
                 if (user != null) {
                     userName = user.getName();
                     Log.i("HERE NEW", "fetched username: " + userName);
-                    try {
-                        fetchRecipesFromUser();
-                    } catch (Exception e) {
-                        Log.i("HERE HOME", "fetching recipes: " + e.getMessage());
-                    }
+                    fetchRecipesFromUser();
+                } else {
+                    Log.i("HERE NEW", "User data is null");
                 }
             }
 
@@ -89,25 +87,17 @@ public class HomeFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 recipeList = new ArrayList<>();
-                try {
-                    Log.i("HERE HOME", "username to fetch from: " + userName);
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Recipe recipe = snapshot.getValue(Recipe.class);
-                        if (recipe != null && recipe.getUser() != null) {
-                            Log.i("HERE HOME", "recipe name check: " + recipe.getUser());
-                            if (recipe.getUser().equals(userName)) {
-                                recipeList.add(recipe);
-                                Log.i("HERE HOME", "added recipe: " + recipe.getName());
-                            }
-                        } else {
-                            Log.i("HERE HOME", "recipe or recipe user is null");
-                        }
+                Log.i("HERE HOME", "username to fetch from: " + userName);
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Recipe recipe = snapshot.getValue(Recipe.class);
+                    if (recipe != null && userName != null && userName.equals(recipe.getUser())) {
+                        recipeList.add(recipe);
+                    } else {
+                        Log.i("HERE HOME", "recipe or recipe user is null");
                     }
-                    recipeAdapter.updateRecipes(recipeList);
-                    Log.i("HERE HOME", "updated list and loaded " + recipeList.size());
-                } catch (Exception e) {
-                    Log.i("HERE HOME", "fetching e: " + e.getMessage());
                 }
+                recipeAdapter.updateRecipes(recipeList);
+                Log.i("HERE HOME", "updated list and loaded " + recipeList.size());
             }
 
             @Override
