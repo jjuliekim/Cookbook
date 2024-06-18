@@ -29,6 +29,7 @@ public class HomeFragment extends Fragment {
     private DatabaseReference recipeDatabase;
     private ArrayList<Recipe> recipeList;
     private String userName;
+    private DatabaseReference userReference;
 
     public HomeFragment() {}
 
@@ -40,23 +41,42 @@ public class HomeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         user = FirebaseAuth.getInstance().getCurrentUser();
-        userName = getArguments().getString("name");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        recipeDatabase = FirebaseDatabase.getInstance().getReference("recipes");
         // set recycler view
         recipeAdapter = new RecipeAdapter(getContext(), new ArrayList<>());
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(recipeAdapter);
-        Log.i("HERE HOME", "username: " + userName);
 
-        fetchRecipesFromUser();
+        recipeDatabase = FirebaseDatabase.getInstance().getReference("recipes");
+        userReference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+        fetchUserName();
 
         return view;
+    }
+
+    // get username from database
+    private void fetchUserName() {
+        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                if (user != null) {
+                    userName = user.getName();
+                    Log.i("HERE NEW", "fetched username: " + userName);
+                    fetchRecipesFromUser();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.i("HERE NEW", "getting username failed", error.toException());
+            }
+        });
     }
 
     // fetch from db recipes created by user
@@ -66,6 +86,7 @@ public class HomeFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 recipeList = new ArrayList<>();
                 try {
+                    Log.i("HERE HOME", "username: " + userName);
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Recipe recipe = snapshot.getValue(Recipe.class);
                         Log.i("HERE HOME", "recipe name: " + recipe.getUser());
@@ -74,7 +95,7 @@ public class HomeFragment extends Fragment {
                         }
                     }
                     recipeAdapter.updateRecipes(recipeList);
-                    Log.i("HERE HOME", "loaded " + recipeList.size());
+                    Log.i("HERE HOME", "updated list and loaded " + recipeList.size());
                 } catch (Exception e) {
                     Log.i("HERE HOME", "fetching e: " + e.getMessage());
                 }

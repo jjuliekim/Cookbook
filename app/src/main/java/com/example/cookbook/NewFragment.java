@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -44,24 +45,21 @@ public class NewFragment extends Fragment {
     private EditText firstStepText;
     private FirebaseUser user;
     private DatabaseReference databaseReference;
+    private DatabaseReference userReference;
     private ArrayList<String> userGroups;
     private String userName;
 
     public NewFragment() {
     }
 
-    public static NewFragment newInstance() {
-        return new NewFragment();
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         user = FirebaseAuth.getInstance().getCurrentUser();
-        userName = getArguments().getString("name");
-        Log.i("HERE NEW", "name: " + userName);
         databaseReference = FirebaseDatabase.getInstance().getReference("recipes");
+        userReference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
         userGroups = new ArrayList<>();
+        fetchUserName();
     }
 
     @Override
@@ -82,6 +80,25 @@ public class NewFragment extends Fragment {
         addIngredientButton.setOnClickListener(v -> addIngredient());
         addStepButton.setOnClickListener(v -> addStep());
         return view;
+    }
+
+    // get username from database
+    private void fetchUserName() {
+        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                if (user != null) {
+                    userName = user.getName();
+                    Log.i("HERE NEW", "fetched username: " + userName);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.i("HERE NEW", "getting username failed", error.toException());
+            }
+        });
     }
 
     // search recipe info on API
@@ -137,7 +154,7 @@ public class NewFragment extends Fragment {
             if (task.isSuccessful()) {
                 Log.i("HERE NEW", "recipe saved");
                 Toast.makeText(getContext(), "Recipe Saved", Toast.LENGTH_SHORT).show();
-                Intent nextIntent = new Intent(getActivity(), DetailsActivity.class);
+                Intent nextIntent = new Intent(getActivity(), MainActivity.class);
                 nextIntent.putExtra("recipe", recipe);
                 startActivity(nextIntent);
             } else {
@@ -214,6 +231,7 @@ public class NewFragment extends Fragment {
                 }
             } catch (Exception e) {
                 Log.i("HERE NEW", "error fetching: " + e.getMessage());
+                Toast.makeText(getContext(), "No Recipe Found", Toast.LENGTH_SHORT).show();
             }
         }
 

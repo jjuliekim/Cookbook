@@ -2,6 +2,7 @@ package com.example.cookbook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,24 +36,32 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     @Override
     public void onBindViewHolder(@NonNull RecipeAdapter.RecipeViewHolder holder, int position) {
         Recipe recipe = recipeList.get(position);
-        holder.nameText.setText(recipe.getName());
-        holder.authorText.setText(String.format("Created by: %s", recipe.getUser()));
-        holder.numberStepsText.setText(String.format("# Steps: %d", recipe.getSteps().size()));
+        if (recipe != null) {
+            holder.nameText.setText(recipe.getName());
+            holder.authorText.setText(String.format("Created by: %s", recipe.getUser()));
+            holder.numberStepsText.setText(String.format("# Steps: %d", recipe.getSteps().size()));
 
-        // if in favorites, set image to filled in
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        ArrayList<String> favorites = recipe.getFavorited();
-        if (favorites.isEmpty() || !favorites.contains(user.getUid())) {
-            holder.heartImage.setImageResource(R.drawable.heart);
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user != null) {
+                ArrayList<String> favorites = recipe.getFavorited();
+                if (favorites.contains(user.getUid())) {
+                    holder.heartImage.setImageResource(R.drawable.heart_colored);
+                } else {
+                    holder.heartImage.setImageResource(R.drawable.heart);
+                }
+            } else {
+                holder.heartImage.setImageResource(R.drawable.heart);
+                Log.i("HERE ADAPTER", "FirebaseUser is null.");
+            }
+
+            holder.itemView.setOnClickListener(v -> {
+                Intent nextIntent = new Intent(context, DetailsActivity.class);
+                nextIntent.putExtra("recipe", recipe);
+                context.startActivity(nextIntent);
+            });
         } else {
-            holder.heartImage.setImageResource(R.drawable.heart_colored);
+            Log.i("HERE ADAPTER", "Recipe at position " + position + " is null.");
         }
-
-        holder.itemView.setOnClickListener(v -> {
-            Intent nextIntent = new Intent(context, DetailsActivity.class);
-            nextIntent.putExtra("recipe", recipe);
-            context.startActivity(nextIntent);
-        });
     }
 
     @Override
@@ -62,9 +71,13 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
     // update list
     public void updateRecipes(ArrayList<Recipe> updatedList) {
-        recipeList.clear();
-        recipeList.addAll(updatedList);
-        notifyDataSetChanged();
+        if (updatedList != null) {
+            recipeList.clear();
+            recipeList.addAll(updatedList);
+            notifyDataSetChanged();
+        } else {
+            Log.i("HERE ADAPTER", "updateRecipes: updatedList is null.");
+        }
     }
 
     public static class RecipeViewHolder extends RecyclerView.ViewHolder {
@@ -79,6 +92,9 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
             authorText = itemView.findViewById(R.id.recipeAuthorText);
             numberStepsText = itemView.findViewById(R.id.recipeStepsNumberText);
             heartImage = itemView.findViewById(R.id.imageView);
+            if (nameText == null || authorText == null || numberStepsText == null || heartImage == null) {
+                Log.i("HERE ADAPTER", "View initialization failed.");
+            }
         }
     }
 
