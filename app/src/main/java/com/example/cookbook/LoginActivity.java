@@ -65,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(this, "Creating Account...", Toast.LENGTH_SHORT).show();
                         FirebaseUser user = mAuth.getCurrentUser();
                         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-                        User newUser = new User(user.getUid(), new ArrayList<>());
+                        User newUser = new User(user.getUid(), name, new ArrayList<>());
                         userRef.setValue(newUser);
                         Intent nextIntent = new Intent(LoginActivity.this, MainActivity.class);
                         nextIntent.putExtra("user", user);
