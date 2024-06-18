@@ -21,8 +21,11 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -42,6 +45,7 @@ public class NewFragment extends Fragment {
     private EditText firstStepText;
     private FirebaseUser user;
     private DatabaseReference databaseReference;
+    private ArrayList<String> userGroups;
 
     public NewFragment() {
     }
@@ -55,6 +59,7 @@ public class NewFragment extends Fragment {
         super.onCreate(savedInstanceState);
         user = FirebaseAuth.getInstance().getCurrentUser();
         databaseReference = FirebaseDatabase.getInstance().getReference("recipes");
+        userGroups = new ArrayList<>();
     }
 
     @Override
@@ -125,8 +130,20 @@ public class NewFragment extends Fragment {
                 return;
             }
         }
-        ArrayList<String> userGroups = new ArrayList<>();
-        /*userGroups.addAll()*/
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User userData = dataSnapshot.getValue(User.class);
+                if (userData != null) {
+                    userGroups = userData.getGroups();
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(getContext(), "Failed to retrieve user data", Toast.LENGTH_SHORT).show();
+            }
+        });
         Recipe recipe = new Recipe(recipeName, user.getUid(), ingredients, steps, new ArrayList<>(), userGroups);
         databaseReference.push().setValue(recipe).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {

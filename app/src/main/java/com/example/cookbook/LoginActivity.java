@@ -15,6 +15,10 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
 
 public class LoginActivity extends AppCompatActivity {
     private EditText nameText;
@@ -60,6 +64,9 @@ public class LoginActivity extends AppCompatActivity {
                         Log.i("HERE LOGIN", "user created: " + name);
                         Toast.makeText(this, "Creating Account...", Toast.LENGTH_SHORT).show();
                         FirebaseUser user = mAuth.getCurrentUser();
+                        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+                        User newUser = new User(user.getUid(), new ArrayList<>());
+                        userRef.setValue(newUser);
                         Intent nextIntent = new Intent(LoginActivity.this, MainActivity.class);
                         nextIntent.putExtra("user", user);
                         startActivity(nextIntent);

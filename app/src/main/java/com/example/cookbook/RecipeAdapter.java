@@ -48,11 +48,11 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
             holder.heartImage.setImageResource(R.drawable.heart_colored);
         }
 
-        /*holder.itemView.setOnClickListener(v -> {
+        holder.itemView.setOnClickListener(v -> {
             Intent nextIntent = new Intent(context, DetailsActivity.class);
             nextIntent.putExtra("recipe", recipe);
             context.startActivity(nextIntent);
-        });*/
+        });
     }
 
     @Override
