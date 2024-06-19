@@ -73,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
                         startActivity(nextIntent);
                     } else {
                         // sign up failed
-                        Log.i("HERE LOGIN", "registration failed");
+                        Log.i("HERE LOGIN", "registration failed: " + task.getException());
                         Toast.makeText(LoginActivity.this, "Registration Failed", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
                         startActivity(nextIntent);
                     } else {
                         // log in failed
-                        Log.i("HERE LOGIN", "login failed");
+                        Log.i("HERE LOGIN", "login failed: " + task.getException());
                         Toast.makeText(this, "Incorrect Password", Toast.LENGTH_SHORT).show();
                     }
                 });

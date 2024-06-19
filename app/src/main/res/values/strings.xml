@@ -20,4 +20,13 @@
     <string name="add_ingredient">Add Ingredient</string>
     <string name="enter_ingredient">Enter Ingredient</string>
     <string name="enter_step">Enter Step</string>
+    <string name="create_new_code"><u>Create New Code</u></string>
+    <string name="sort_recipes_by">Sort Recipes By</string>
+    <string name="enter_group_code">Enter Group Code</string>
+    <string name="join_group">Join Group</string>
+    <string-array name="sort_recipes">
+        <item>Alphabetical</item>
+        <item>Number of Steps</item>
+        <item>Favorites</item>
+    </string-array>
 </resources>
