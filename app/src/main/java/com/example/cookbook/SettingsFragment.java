@@ -102,7 +102,7 @@ public class SettingsFragment extends Fragment {
                     DatabaseReference groupRef = groupReference.child(code);
                     groupRef.setValue(userId).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            Toast.makeText(getContext(), "Group Code Created: " + code, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Group Created: " + code, Toast.LENGTH_SHORT).show();
                             Log.i("HERE SETTINGS", "group code: " + code);
                             groupCodeText.setText(code);
                         } else {

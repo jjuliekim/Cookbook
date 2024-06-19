@@ -260,6 +260,7 @@ public class NewFragment extends Fragment {
 
     // take photo
     private void takePhoto() {
+        // save to some storage
 
     }
 
