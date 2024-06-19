@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F3E7DB"
     tools:context=".DetailsActivity">
 
     <ScrollView
@@ -33,7 +34,7 @@
                     android:textStyle="bold" />
 
                 <Space
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
 
@@ -42,6 +43,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="20dp"
+                    android:backgroundTint="#838F59"
                     android:text="@string/button" />
             </LinearLayout>
 
@@ -85,6 +87,7 @@
                 android:layout_marginTop="50dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:backgroundTint="#60310D"
                 android:text="@string/share" />
 
         </LinearLayout>
