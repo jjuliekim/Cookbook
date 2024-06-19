@@ -70,6 +70,7 @@ public class NewFragment extends Fragment {
         Button saveButton = view.findViewById(R.id.saveButton);
         Button addIngredientButton = view.findViewById(R.id.addIngredientButton);
         Button addStepButton = view.findViewById(R.id.addStepButton);
+        Button attachPhoto = view.findViewById(R.id.uploadPhotoButton);
         ingredientsLayout = view.findViewById(R.id.ingredientsLayout);
         stepsLayout = view.findViewById(R.id.stepsLayout);
         firstIngredientText = view.findViewById(R.id.firstIngredientText);
@@ -79,6 +80,7 @@ public class NewFragment extends Fragment {
         saveButton.setOnClickListener(v -> saveRecipe());
         addIngredientButton.setOnClickListener(v -> addIngredient());
         addStepButton.setOnClickListener(v -> addStep());
+        attachPhoto.setOnClickListener(v -> takePhoto());
         return view;
     }
 
@@ -254,6 +256,11 @@ public class NewFragment extends Fragment {
                 return null;
             }
         }
+    }
+
+    // take photo
+    private void takePhoto() {
+
     }
 
 

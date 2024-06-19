@@ -88,11 +88,19 @@
             android:text="@string/add_step" />
 
         <Button
+            android:id="@+id/uploadPhotoButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:backgroundTint="#60310D"
+            android:text="@string/attach_photo" />
+
+        <Button
+            android:layout_marginTop="40dp"
             android:id="@+id/saveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="#60310D"
+            android:backgroundTint="#838F59"
             android:text="@string/save_amp_upload_recipe"/>
 
     </LinearLayout>
