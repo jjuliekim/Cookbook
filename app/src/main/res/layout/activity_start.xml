@@ -10,11 +10,11 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="70dp"
+        android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:layout_marginBottom="390dp"
         android:backgroundTint="#60310D"
-        android:text="@string/arrow"
+        android:text="@string/open"
         android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

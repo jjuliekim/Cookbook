@@ -28,6 +28,7 @@
     <string name="attach_photo">Attach Photo</string>
     <string name="button">button</string>
     <string name="share">Share</string>
+    <string name="open"><![CDATA[Open >]]></string>
     <string-array name="sort_recipes">
         <item>Alphabetical</item>
         <item>Number of Steps</item>
