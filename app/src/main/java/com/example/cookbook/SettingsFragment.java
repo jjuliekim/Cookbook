@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +34,8 @@ public class SettingsFragment extends Fragment {
     private DatabaseReference groupReference;
     private FirebaseAuth mAuth;
 
-    public SettingsFragment() {}
+    public SettingsFragment() {
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,8 +68,10 @@ public class SettingsFragment extends Fragment {
                 editor.putInt("sort_option", position);
                 editor.apply();
             }
+
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
         });
 
         return view;
@@ -94,19 +98,16 @@ public class SettingsFragment extends Fragment {
                     createCode();
                 } else {
                     FirebaseUser user = mAuth.getCurrentUser();
-                    if (user != null) {
-                        String userId = user.getUid();
-                        DatabaseReference groupRef = groupReference.child(code);
-                        groupRef.setValue(userId).addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(getContext(), "Group Code Created: " + code, Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(getContext(), "Failed to Create Group Code", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    } else {
-                        Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
-                    }
+                    String userId = user.getUid();
+                    DatabaseReference groupRef = groupReference.child(code);
+                    groupRef.setValue(userId).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(getContext(), "Group Code Created: " + code, Toast.LENGTH_SHORT).show();
+                            Log.i("HERE SETTINGS", "group code: " + code);
+                        } else {
+                            Toast.makeText(getContext(), "Failed to Create Group Code", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
 
@@ -130,11 +131,12 @@ public class SettingsFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
                     Toast.makeText(getContext(), "Group Does Not Exist", Toast.LENGTH_SHORT).show();
-                    return;
+                } else {
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    String userId = user.getUid();
+
                 }
             }
-            // if group code exists, add code to user list
-
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
