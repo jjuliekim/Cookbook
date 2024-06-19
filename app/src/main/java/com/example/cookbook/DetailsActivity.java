@@ -25,7 +25,5 @@ public class DetailsActivity extends AppCompatActivity {
 
         Intent myIntent = getIntent();
         Recipe recipe = myIntent.getParcelableExtra("recipe");
-        TextView textView = findViewById(R.id.textView);
-        textView.setText(recipe.getName());
     }
 }

@@ -104,6 +104,7 @@ public class SettingsFragment extends Fragment {
                         if (task.isSuccessful()) {
                             Toast.makeText(getContext(), "Group Code Created: " + code, Toast.LENGTH_SHORT).show();
                             Log.i("HERE SETTINGS", "group code: " + code);
+                            groupCodeText.setText(code);
                         } else {
                             Toast.makeText(getContext(), "Failed to Create Group Code", Toast.LENGTH_SHORT).show();
                         }
