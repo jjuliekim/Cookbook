@@ -43,7 +43,6 @@ public class NewFragment extends Fragment {
     private LinearLayout stepsLayout;
     private EditText firstIngredientText;
     private EditText firstStepText;
-    private FirebaseUser user;
     private DatabaseReference databaseReference;
     private DatabaseReference userReference;
     private String userName;
@@ -54,7 +53,7 @@ public class NewFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         databaseReference = FirebaseDatabase.getInstance().getReference("recipes");
         userReference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
         fetchUserName();
@@ -209,7 +208,7 @@ public class NewFragment extends Fragment {
                     ArrayList<String> ingredients = new ArrayList<>();
                     for (int i = 1; i < 21; i++) {
                         String ingredient = meal.getString("strIngredient" + i);
-                        if (ingredient != null && !ingredient.isEmpty()) {
+                        if (!ingredient.isEmpty()) {
                             ingredients.add(ingredient);
                         }
                     }

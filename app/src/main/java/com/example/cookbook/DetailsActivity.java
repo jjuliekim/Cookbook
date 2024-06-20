@@ -73,11 +73,11 @@ public class DetailsActivity extends AppCompatActivity {
         recipe.getFavorited().add(userId);
         recipeDatabase.child(recipe.getId()).setValue(recipe).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                Toast.makeText(DetailsActivity.this, "Added to favorites", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Added to favorites", Toast.LENGTH_SHORT).show();
                 Log.i("HERE DETAILS", "added to favorites");
                 updateFavoriteButton();
             } else {
-                Toast.makeText(DetailsActivity.this, "Failed to add to favorites", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Failed to add to favorites", Toast.LENGTH_SHORT).show();
                 Log.i("HERE DETAILS", "failed to add to favs");
             }
         });
@@ -91,11 +91,11 @@ public class DetailsActivity extends AppCompatActivity {
             recipe.setFavorited(favoritedBy);
             recipeDatabase.child(recipe.getId()).setValue(recipe).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    Toast.makeText(DetailsActivity.this, "Removed from favorites", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Removed from favorites", Toast.LENGTH_SHORT).show();
                     Log.i("HERE DETAILS", "removed from favs");
                     updateFavoriteButton();
                 } else {
-                    Toast.makeText(DetailsActivity.this, "Failed to remove from favorites", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Failed to remove from favorites", Toast.LENGTH_SHORT).show();
                     Log.i("HERE DETAILS", "failed to remove from favs");
                 }
             });
