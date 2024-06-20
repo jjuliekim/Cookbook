@@ -2,6 +2,7 @@ package com.example.cookbook;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -31,8 +32,15 @@ public class DetailsActivity extends AppCompatActivity {
         nameText.setText(recipe.getName());
         TextView authorText = findViewById(R.id.dishAuthorText);
         authorText.setText(String.format("Uploaded by: %s", recipe.getUser()));
+        imageView = findViewById(R.id.recipeImage);
+        Button shareButton = findViewById(R.id.shareButton);
+        shareButton.setOnClickListener(v -> shareRecipe());
+        Button favoriteButton = findViewById(R.id.favoriteButton);
+//        if (recipe.getFavorited().contains())
 
+    }
 
+    private void shareRecipe() {
 
     }
 }
