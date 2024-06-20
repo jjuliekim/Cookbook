@@ -46,7 +46,6 @@ public class NewFragment extends Fragment {
     private FirebaseUser user;
     private DatabaseReference databaseReference;
     private DatabaseReference userReference;
-    private ArrayList<String> userGroups;
     private String userName;
 
     public NewFragment() {
@@ -58,7 +57,6 @@ public class NewFragment extends Fragment {
         user = FirebaseAuth.getInstance().getCurrentUser();
         databaseReference = FirebaseDatabase.getInstance().getReference("recipes");
         userReference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-        userGroups = new ArrayList<>();
         fetchUserName();
     }
 
@@ -151,8 +149,9 @@ public class NewFragment extends Fragment {
                 return;
             }
         }
-        Recipe recipe = new Recipe(recipeName, userName, ingredients, steps, new ArrayList<>(), userGroups);
-        databaseReference.push().setValue(recipe).addOnCompleteListener(task -> {
+        String recipeId = databaseReference.push().getKey();
+        Recipe recipe = new Recipe(recipeId, recipeName, userName, ingredients, steps, new ArrayList<>());
+        databaseReference.child(recipeId).setValue(recipe).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Log.i("HERE NEW", "recipe saved");
                 Toast.makeText(getContext(), "Recipe Saved", Toast.LENGTH_SHORT).show();
@@ -214,9 +213,10 @@ public class NewFragment extends Fragment {
                             ingredients.add(ingredient);
                         }
                     }
-                    Recipe recipe = new Recipe(recipeInputText.getText().toString(), userName,
-                            ingredients, stepsList, new ArrayList<>(), new ArrayList<>());
-                    databaseReference.push().setValue(recipe).addOnCompleteListener(task -> {
+                    String recipeId = databaseReference.push().getKey();
+                    Recipe recipe = new Recipe(recipeId, recipeInputText.getText().toString(), userName,
+                            ingredients, stepsList, new ArrayList<>());
+                    databaseReference.child(recipeId).setValue(recipe).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Log.i("HERE NEW", "recipe saved");
                             Toast.makeText(getContext(), "Recipe Saved", Toast.LENGTH_SHORT).show();

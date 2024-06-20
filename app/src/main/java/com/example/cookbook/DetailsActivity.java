@@ -2,9 +2,11 @@ package com.example.cookbook;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,8 +14,19 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
+
 public class DetailsActivity extends AppCompatActivity {
     private ImageView imageView;
+    private Recipe recipe;
+    private String userId;
+    private DatabaseReference recipeDatabase;
+    private Button favoriteButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +39,10 @@ public class DetailsActivity extends AppCompatActivity {
             return insets;
         });
         Intent myIntent = getIntent();
-        Recipe recipe = myIntent.getParcelableExtra("recipe");
+        recipe = myIntent.getParcelableExtra("recipe");
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        userId = user.getUid();
+        recipeDatabase = FirebaseDatabase.getInstance().getReference("recipes");
 
         TextView nameText = findViewById(R.id.dishNameText);
         nameText.setText(recipe.getName());
@@ -35,9 +51,55 @@ public class DetailsActivity extends AppCompatActivity {
         imageView = findViewById(R.id.recipeImage);
         Button shareButton = findViewById(R.id.shareButton);
         shareButton.setOnClickListener(v -> shareRecipe());
-        Button favoriteButton = findViewById(R.id.favoriteButton);
-//        if (recipe.getFavorited().contains())
+        favoriteButton = findViewById(R.id.favoriteButton);
+        updateFavoriteButton();
+    }
 
+    private void updateFavoriteButton() {
+        if (recipe.getFavorited() != null && recipe.getFavorited().contains(userId)) {
+            favoriteButton.setText("Remove from Favorites");
+            favoriteButton.setOnClickListener(v -> removeFavorite());
+        } else {
+            favoriteButton.setText("Add to Favorites");
+            favoriteButton.setOnClickListener(v -> addFavorite());
+        }
+    }
+
+    // add user to favorite list
+    private void addFavorite() {
+        if (recipe.getFavorited() == null) {
+            recipe.setFavorited(new ArrayList<>());
+        }
+        recipe.getFavorited().add(userId);
+        recipeDatabase.child(recipe.getId()).setValue(recipe).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(DetailsActivity.this, "Added to favorites", Toast.LENGTH_SHORT).show();
+                Log.i("HERE DETAILS", "added to favorites");
+                updateFavoriteButton();
+            } else {
+                Toast.makeText(DetailsActivity.this, "Failed to add to favorites", Toast.LENGTH_SHORT).show();
+                Log.i("HERE DETAILS", "failed to add to favs");
+            }
+        });
+    }
+
+    // remove user from favorite list
+    private void removeFavorite() {
+        ArrayList<String> favoritedBy = recipe.getFavorited();
+        if (favoritedBy != null) {
+            favoritedBy.remove(userId);
+            recipe.setFavorited(favoritedBy);
+            recipeDatabase.child(recipe.getId()).setValue(recipe).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Toast.makeText(DetailsActivity.this, "Removed from favorites", Toast.LENGTH_SHORT).show();
+                    Log.i("HERE DETAILS", "removed from favs");
+                    updateFavoriteButton();
+                } else {
+                    Toast.makeText(DetailsActivity.this, "Failed to remove from favorites", Toast.LENGTH_SHORT).show();
+                    Log.i("HERE DETAILS", "failed to remove from favs");
+                }
+            });
+        }
     }
 
     private void shareRecipe() {

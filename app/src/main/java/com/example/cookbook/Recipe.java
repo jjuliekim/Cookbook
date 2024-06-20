@@ -8,23 +8,30 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 
 public class Recipe implements Parcelable {
+    private String id;
     private String name;
     private String user;
     private ArrayList<String> ingredients;
     private ArrayList<String> steps;
     private ArrayList<String> favorited;
-    private ArrayList<String> groups;
 
     public Recipe() {}
 
-    public Recipe(String name, String user, ArrayList<String> ingredients, ArrayList<String> steps,
-                  ArrayList<String> favorited, ArrayList<String> groups) {
+    public Recipe(String id, String name, String user, ArrayList<String> ingredients, ArrayList<String> steps, ArrayList<String> favorited) {
+        this.id = id;
         this.name = name;
         this.user = user;
         this.ingredients = ingredients;
         this.steps = steps;
         this.favorited = favorited;
-        this.groups = groups;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -67,21 +74,13 @@ public class Recipe implements Parcelable {
         this.favorited = favorited;
     }
 
-    public ArrayList<String> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(ArrayList<String> groups) {
-        this.groups = groups;
-    }
-
     protected Recipe(Parcel in) {
+        id = in.readString();
         name = in.readString();
         user = in.readString();
         ingredients = in.createStringArrayList();
         steps = in.createStringArrayList();
         favorited = in.createStringArrayList();
-        groups = in.createStringArrayList();
     }
 
     public static final Creator<Recipe> CREATOR = new Creator<Recipe>() {
@@ -103,11 +102,11 @@ public class Recipe implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(id);
         dest.writeString(name);
         dest.writeString(user);
         dest.writeStringList(ingredients);
         dest.writeStringList(steps);
         dest.writeStringList(favorited);
-        dest.writeStringList(groups);
     }
 }
