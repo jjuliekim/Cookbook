@@ -81,7 +81,7 @@ public class Recipe implements Parcelable {
         return imageURL;
     }
 
-    public void setImageURL(String imageURL) {
+    public void setImage(String imageURL) {
         this.imageURL = imageURL;
     }
 

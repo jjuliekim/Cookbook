@@ -24,9 +24,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 public class HomeFragment extends Fragment {
     private FirebaseUser user;
@@ -73,8 +70,6 @@ public class HomeFragment extends Fragment {
                     String username = user.getName();
                     fetchRecipesFromUser();
                     recipeAdapter.setUsername(username);
-                } else {
-                    Log.i("HERE NEW", "User data is null");
                 }
             }
 
@@ -97,9 +92,8 @@ public class HomeFragment extends Fragment {
                         recipeList.add(recipe);
                     }
                 }
-                sortRecipes();
+//                sortRecipes();
                 recipeAdapter.updateRecipes(recipeList);
-                Log.i("HERE HOME", "updated list and loaded " + recipeList.size());
             }
 
             @Override
@@ -108,27 +102,6 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(getContext(), "failed to load recipes", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    // sort the recipes in the recycler view
-    public void sortRecipes() {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("page_prefs", Context.MODE_PRIVATE);
-        int sortOption = sharedPreferences.getInt("sort_option", 0);
-        switch (sortOption) {
-            case 0: // alphabetical
-                recipeList.sort((r1, r2) -> r1.getName().compareToIgnoreCase(r2.getName()));
-                break;
-            case 1: // increasing number of steps
-                recipeList.sort(Comparator.comparingInt(r -> r.getSteps().size()));
-                break;
-            case 2: // favorites at the top
-                recipeList.sort((r1, r2) -> {
-                    boolean r1Favorite = r1.getFavorited() != null && r1.getFavorited().contains(user.getUid());
-                    boolean r2Favorite = r2.getFavorited() != null && r2.getFavorited().contains(user.getUid());
-                    return Boolean.compare(r2Favorite, r1Favorite);
-                });
-                break;
-        }
     }
 
 

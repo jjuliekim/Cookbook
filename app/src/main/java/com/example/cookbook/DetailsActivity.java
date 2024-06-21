@@ -104,11 +104,11 @@ public class DetailsActivity extends AppCompatActivity {
 
     // retrieve and display image
     private void setImage() {
-        if (recipe.getImageURL() != null) {
+        if (recipe.getImageURL() != null && !recipe.getImageURL().isEmpty()) {
             Glide.with(this).load(recipe.getImageURL()).into(imageView);
             Log.i("HERE DETAILS", "loaded image");
         } else {
-            Log.i("HERE DETAILS", "no image");
+            Log.i("HERE DETAILS", "no image " + recipe.getImageURL());
         }
     }
 

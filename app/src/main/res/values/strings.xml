@@ -32,6 +32,5 @@
     <string-array name="sort_recipes">
         <item>Alphabetical</item>
         <item>Number of Steps</item>
-        <item>Favorites</item>
     </string-array>
 </resources>

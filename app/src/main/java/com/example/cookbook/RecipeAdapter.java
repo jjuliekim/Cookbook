@@ -74,6 +74,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         }
     }
 
+    // get username of recipe creator
     private void fetchUsername(String userId, TextView authorText) {
         userDatabase.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

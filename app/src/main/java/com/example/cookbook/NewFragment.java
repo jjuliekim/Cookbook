@@ -27,7 +27,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -51,6 +50,7 @@ public class NewFragment extends Fragment {
     private Uri imageUri;
     private String imageURL;
     private Button attachPhoto;
+    private Recipe recipe;
 
     public NewFragment() {
     }
@@ -99,7 +99,6 @@ public class NewFragment extends Fragment {
         if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imageUri = data.getData();
             Toast.makeText(getContext(), "Image Selected", Toast.LENGTH_SHORT).show();
-            Log.i("HERE NEW", "image selected " + imageUri);
             attachPhoto.setText("Photo Uploaded");
         }
     }
@@ -155,10 +154,12 @@ public class NewFragment extends Fragment {
         String recipeId = databaseReference.push().getKey();
         if (imageUri != null) {
             uploadImage(imageUri, recipeId);
+            Log.i("HERE NEW", "Saved image");
         } else {
             imageURL = "";
+            Log.i("HERE NEW", "no image saved");
         }
-        Recipe recipe = new Recipe(recipeId, recipeName, userId, ingredients, steps, new ArrayList<>(), imageURL);
+        recipe = new Recipe(recipeId, recipeName, userId, ingredients, steps, new ArrayList<>(), imageURL);
         databaseReference.child(recipeId).setValue(recipe).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Log.i("HERE NEW", "recipe saved");
@@ -224,7 +225,7 @@ public class NewFragment extends Fragment {
                         }
                     }
                     String recipeId = databaseReference.push().getKey();
-                    Recipe recipe = new Recipe(recipeId, recipeInputText.getText().toString(), userId,
+                    recipe = new Recipe(recipeId, recipeInputText.getText().toString(), userId,
                             ingredients, stepsList, new ArrayList<>(), "");
                     databaseReference.child(recipeId).setValue(recipe).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
@@ -274,11 +275,10 @@ public class NewFragment extends Fragment {
         storageRef.putFile(imageUri)
                 .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                     imageURL = uri.toString();
+                    recipe.setImage(imageURL);
                     databaseReference.child(recipeId).child("imageURL").setValue(imageURL);
-                    Log.i("HERE NEW", "image url: " + imageURL);
+                    Log.i("HERE NEW", "uploaded image url: " + imageURL);
                 }))
                 .addOnFailureListener(e -> Log.e("UPLOAD IMAGE", "Failed to upload image", e));
     }
-
-
 }
