@@ -44,8 +44,7 @@ public class NewFragment extends Fragment {
     private EditText firstIngredientText;
     private EditText firstStepText;
     private DatabaseReference databaseReference;
-    private DatabaseReference userReference;
-    private String userName;
+    private String userId;
 
     public NewFragment() {
     }
@@ -54,9 +53,8 @@ public class NewFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        userId = user.getUid();
         databaseReference = FirebaseDatabase.getInstance().getReference("recipes");
-        userReference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-        fetchUserName();
     }
 
     @Override
@@ -79,25 +77,6 @@ public class NewFragment extends Fragment {
         addStepButton.setOnClickListener(v -> addStep());
         attachPhoto.setOnClickListener(v -> takePhoto());
         return view;
-    }
-
-    // get username from database
-    private void fetchUserName() {
-        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                if (user != null) {
-                    userName = user.getName();
-                    Log.i("HERE NEW", "fetched username: " + userName);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.i("HERE NEW", "getting username failed", error.toException());
-            }
-        });
     }
 
     // search recipe info on API
@@ -149,7 +128,7 @@ public class NewFragment extends Fragment {
             }
         }
         String recipeId = databaseReference.push().getKey();
-        Recipe recipe = new Recipe(recipeId, recipeName, userName, ingredients, steps, new ArrayList<>());
+        Recipe recipe = new Recipe(recipeId, recipeName, userId, ingredients, steps, new ArrayList<>());
         databaseReference.child(recipeId).setValue(recipe).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Log.i("HERE NEW", "recipe saved");
@@ -168,7 +147,8 @@ public class NewFragment extends Fragment {
     private void addIngredient() {
         if (!firstIngredientText.getText().toString().isEmpty()) {
             EditText ingredientField = new EditText(getContext());
-            ingredientField.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            ingredientField.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             ingredientField.setHint("Enter Ingredient");
             ingredientsLayout.addView(ingredientField);
         }
@@ -178,7 +158,8 @@ public class NewFragment extends Fragment {
     private void addStep() {
         if (!firstStepText.getText().toString().isEmpty()) {
             EditText stepField = new EditText(getContext());
-            stepField.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            stepField.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             stepField.setHint("Enter Step");
             stepsLayout.addView(stepField);
         }
@@ -213,7 +194,7 @@ public class NewFragment extends Fragment {
                         }
                     }
                     String recipeId = databaseReference.push().getKey();
-                    Recipe recipe = new Recipe(recipeId, recipeInputText.getText().toString(), userName,
+                    Recipe recipe = new Recipe(recipeId, recipeInputText.getText().toString(), userId,
                             ingredients, stepsList, new ArrayList<>());
                     databaseReference.child(recipeId).setValue(recipe).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {

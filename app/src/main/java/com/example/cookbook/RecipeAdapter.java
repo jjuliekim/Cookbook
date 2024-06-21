@@ -15,12 +15,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
     private final ArrayList<Recipe> recipeList;
     private final Context context;
+    private DatabaseReference userReference;
+    private String userId;
+    private FirebaseUser user;
+    private String username;
 
     public RecipeAdapter(Context context, ArrayList<Recipe> recipeList) {
         this.context = context;
@@ -31,6 +40,9 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     @Override
     public RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recipe, parent, false);
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        userId = user.getUid();
+        userReference = FirebaseDatabase.getInstance().getReference("users").child(userId);
         return new RecipeViewHolder(view);
     }
 
@@ -39,15 +51,15 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         Recipe recipe = recipeList.get(position);
         if (recipe != null) {
             holder.nameText.setText(recipe.getName());
-            holder.authorText.setText(String.format("Created by: %s", recipe.getUser()));
+            fetchUserName();
+            holder.authorText.setText(String.format("Created by: %s", username));
             holder.numberStepsText.setText(String.format("# Steps: %d", recipe.getSteps().size()));
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user != null) {
                 ArrayList<String> favorites = recipe.getFavorited();
                 if (favorites == null) {
                     favorites = new ArrayList<>();
                 }
-                if (favorites.contains(user.getUid())) {
+                if (favorites.contains(userId)) {
                     holder.heartImage.setImageResource(R.drawable.heart_colored);
                 } else {
                     holder.heartImage.setImageResource(R.drawable.heart);
@@ -61,6 +73,25 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         } else {
             Log.i("HERE ADAPTER", "Recipe at position " + position + " is null.");
         }
+    }
+
+    // get username from database
+    private void fetchUserName() {
+        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                if (user != null) {
+                    username = user.getName();
+                    Log.i("HERE NEW", "fetched username: " + user.getName());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.i("HERE NEW", "getting username failed", error.toException());
+            }
+        });
     }
 
     @Override

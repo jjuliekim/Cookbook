@@ -21,15 +21,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ExploreFragment extends Fragment {
     private FirebaseUser user;
     private RecipeAdapter recipeAdapter;
     private DatabaseReference recipeDatabase;
     private DatabaseReference userDatabase;
+    private DatabaseReference groupDatabase;
     private ArrayList<Recipe> recipeList;
-    private String username;
-    private ArrayList<String> userGroups;
+    private Set<String> usersGroups;
+    private Set<String> groupUsers;
 
     public ExploreFragment() {
     }
@@ -38,6 +41,8 @@ public class ExploreFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         user = FirebaseAuth.getInstance().getCurrentUser();
+        usersGroups = new HashSet<>();
+        groupUsers = new HashSet<>();
     }
 
     @Override
@@ -45,6 +50,7 @@ public class ExploreFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_explore, container, false);
         recipeDatabase = FirebaseDatabase.getInstance().getReference("recipes");
         userDatabase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+        groupDatabase = FirebaseDatabase.getInstance().getReference("groups");
         fetchUserName();
         fetchRecipesFromGroups();
         // set recycler view
@@ -61,14 +67,11 @@ public class ExploreFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
-                if (user != null) {
-                    username = user.getName();
-                    userGroups = user.getGroups() != null ? user.getGroups() : new ArrayList<>();
-                    Log.i("HERE EXPLORE", "fetched username: " + username);
-                    Log.i("HERE EXPLORE", "fetched groups: " + userGroups);
-                } else {
-                    Log.i("HERE EXPLORE", "User data is null");
+                if (user.getGroups() != null) {
+                    usersGroups.addAll(user.getGroups());
                 }
+                Log.i("HERE EXPLORE", "fetched groups: " + usersGroups);
+                fetchGroupUsers();
             }
 
             @Override
@@ -76,6 +79,26 @@ public class ExploreFragment extends Fragment {
                 Log.i("HERE EXPLORE", "getting username failed", error.toException());
             }
         });
+    }
+
+    // get users in the same group as the current user
+    private void fetchGroupUsers() {
+        for (String code : usersGroups) {
+            groupDatabase.child(code).child("userIds").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        groupUsers.add(snapshot.getKey());
+                    }
+                    fetchRecipesFromGroups();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.i("HERE EXPLORE", "failed get group users: " + error.getMessage());
+                }
+            });
+        }
     }
 
     // get recipes created by group
@@ -88,7 +111,7 @@ public class ExploreFragment extends Fragment {
                     Recipe recipe = snapshot.getValue(Recipe.class);
                     if (recipe != null) {
                         // add if created by user or user's group
-                        if (recipe.getUser().equals(username) || userGroups.contains(recipe.getUser())) {
+                        if (recipe.getUser().equals(user.getUid()) || groupUsers.contains(recipe.getUser())) {
                             recipeList.add(recipe);
                         }
                     }
