@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,8 +32,8 @@ public class ExploreFragment extends Fragment {
     private DatabaseReference userDatabase;
     private DatabaseReference groupDatabase;
     private ArrayList<Recipe> recipeList;
-    private Set<String> usersGroups; // groups the user is in
-    private Set<String> groupUsers; // users who are also members of the group
+    private Set<String> usersGroups; // the user's groups
+    private Set<String> groupUsers; // other group members
 
     public ExploreFragment() {
     }
@@ -51,7 +52,7 @@ public class ExploreFragment extends Fragment {
         recipeDatabase = FirebaseDatabase.getInstance().getReference("recipes");
         userDatabase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
         groupDatabase = FirebaseDatabase.getInstance().getReference("groups");
-        fetchUserName();
+        fetchUserGroups();
         // set recycler view
         recipeAdapter = new RecipeAdapter(getContext(), new ArrayList<>());
         RecyclerView recyclerView = view.findViewById(R.id.exploreRecyclerView);
@@ -60,33 +61,30 @@ public class ExploreFragment extends Fragment {
         return view;
     }
 
-    // get current user's username
-    private void fetchUserName() {
+    // get groups the user is in
+    private void fetchUserGroups() {
         userDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                if (user.getGroups() != null) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User user = snapshot.getValue(User.class);
+                if (user != null && user.getGroups() != null) {
                     usersGroups.addAll(user.getGroups());
+                    fetchGroupUsers();
+                } else {
+                    Log.i("HERE EXPLORE", "user data null or in no groups");
+                    Toast.makeText(getContext(), "No Group Recipes to Display", Toast.LENGTH_SHORT).show();
                 }
-                Log.i("HERE EXPLORE", "fetched groups: " + usersGroups);
-                fetchGroupUsers();
-                fetchRecipesFromGroups();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.i("HERE EXPLORE", "getting username failed", error.toException());
+                Log.i("HERE EXPLORE", "fetch user groups e: " + error.getMessage());
             }
         });
     }
 
     // get users in the same group as the current user
     private void fetchGroupUsers() {
-        if (usersGroups.isEmpty()) {
-            fetchRecipesFromGroups();
-            return;
-        }
         for (String code : usersGroups) {
             groupDatabase.child(code).child("userIds").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -94,11 +92,12 @@ public class ExploreFragment extends Fragment {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         groupUsers.add(snapshot.getKey());
                     }
+                    fetchRecipesFromGroups();
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    Log.i("HERE EXPLORE", "failed get group users: " + error.getMessage());
+                    Log.i("HERE EXPLORE", "failed to get group users: " + error.getMessage());
                 }
             });
         }
@@ -112,11 +111,8 @@ public class ExploreFragment extends Fragment {
                 recipeList = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Recipe recipe = snapshot.getValue(Recipe.class);
-                    if (recipe != null) {
-                        // add if created by user or user's group
-                        if (recipe.getUser().equals(user.getUid()) || groupUsers.contains(recipe.getUser())) {
-                            recipeList.add(recipe);
-                        }
+                    if (recipe != null && groupUsers.contains(recipe.getUser())) {
+                        recipeList.add(recipe);
                     }
                 }
                 recipeAdapter.updateRecipes(recipeList);
