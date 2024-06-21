@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
@@ -26,8 +25,6 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
@@ -53,6 +50,7 @@ public class NewFragment extends Fragment {
     private String userId;
     private Uri imageUri;
     private String imageURL;
+    private Button attachPhoto;
 
     public NewFragment() {
     }
@@ -73,7 +71,7 @@ public class NewFragment extends Fragment {
         Button saveButton = view.findViewById(R.id.saveButton);
         Button addIngredientButton = view.findViewById(R.id.addIngredientButton);
         Button addStepButton = view.findViewById(R.id.addStepButton);
-        Button attachPhoto = view.findViewById(R.id.uploadPhotoButton);
+        attachPhoto = view.findViewById(R.id.uploadPhotoButton);
         ingredientsLayout = view.findViewById(R.id.ingredientsLayout);
         stepsLayout = view.findViewById(R.id.stepsLayout);
         firstIngredientText = view.findViewById(R.id.firstIngredientText);
@@ -102,6 +100,7 @@ public class NewFragment extends Fragment {
             imageUri = data.getData();
             Toast.makeText(getContext(), "Image Selected", Toast.LENGTH_SHORT).show();
             Log.i("HERE NEW", "image selected " + imageUri);
+            attachPhoto.setText("Photo Uploaded");
         }
     }
 
@@ -267,12 +266,6 @@ public class NewFragment extends Fragment {
                 return null;
             }
         }
-    }
-
-    // take photo
-    private void takePhoto() {
-        // save to some storage
-
     }
 
     // upload image to storage

@@ -69,6 +69,9 @@ public class DetailsActivity extends AppCompatActivity {
     private void setImage() {
         if (recipe.getImageURL() != null) {
             Glide.with(this).load(recipe.getImageURL()).into(imageView);
+            Log.i("HERE DETAILS", "loaded image");
+        } else {
+            Log.i("HERE DETAILS", "no image");
         }
     }
 
