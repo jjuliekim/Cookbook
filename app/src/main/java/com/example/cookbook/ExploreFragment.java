@@ -88,7 +88,7 @@ public class ExploreFragment extends Fragment {
                     Recipe recipe = snapshot.getValue(Recipe.class);
                     if (recipe != null) {
                         // add if created by user or user's group
-                        if (recipe.getUser().equals(user.getUid()) || userGroups.contains(recipe.getUser())) {
+                        if (recipe.getUser().equals(username) || userGroups.contains(recipe.getUser())) {
                             recipeList.add(recipe);
                         }
                     }

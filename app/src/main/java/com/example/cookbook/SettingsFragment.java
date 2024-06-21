@@ -33,16 +33,17 @@ import java.util.Random;
 public class SettingsFragment extends Fragment {
     private EditText groupCodeText;
     private DatabaseReference groupReference;
+    private DatabaseReference userReference;
     private FirebaseAuth mAuth;
 
-    public SettingsFragment() {
-    }
+    public SettingsFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         groupReference = FirebaseDatabase.getInstance().getReference("groups");
         mAuth = FirebaseAuth.getInstance();
+        userReference = FirebaseDatabase.getInstance().getReference("users").child(mAuth.getCurrentUser().getUid());
     }
 
     @Override
@@ -72,8 +73,7 @@ public class SettingsFragment extends Fragment {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
         return view;
@@ -92,14 +92,16 @@ public class SettingsFragment extends Fragment {
         checkCode(code);
     }
 
-    // check if code already exists
+    // check if code already exists in "groups"
     private void checkCode(String code) {
         groupReference.child(code).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    // create new code
                     createCode();
                 } else {
+                    // display code for user
                     groupCodeText.setText(code);
                     Toast.makeText(getContext(), "Code Created", Toast.LENGTH_SHORT).show();
                 }
@@ -112,69 +114,57 @@ public class SettingsFragment extends Fragment {
         });
     }
 
-    // add code to user group list
+    // join group action
     private void addGroup(String code) {
         if (code.isEmpty()) {
             Toast.makeText(getContext(), "Enter Code", Toast.LENGTH_SHORT).show();
             return;
         }
+        // add code to "groups" with user id
         groupReference.child(code).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()) {
-                    // Save the group code in the groups database
-                    groupReference.child(code).setValue(true).addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            addUserToGroup(code);
-                        } else {
-                            Toast.makeText(getContext(), "Failed to join group", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } else {
-                    addUserToGroup(code);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), "Database Error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    // save group code in the users database
-    private void addUserToGroup(String code) {
-        FirebaseUser user = mAuth.getCurrentUser();
-        String userId = user.getUid();
-        DatabaseReference userReference = FirebaseDatabase.getInstance().getReference("users").child(userId).child("groups");
-        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ArrayList<String> groupsList = new ArrayList<>();
                 if (snapshot.exists()) {
-                    for (DataSnapshot groupSnapshot : snapshot.getChildren()) {
-                        groupsList.add(groupSnapshot.getValue(String.class));
-                    }
-                }
-                if (!groupsList.contains(code)) {
-                    groupsList.add(code);
-                    userReference.setValue(groupsList).addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(getContext(), "Group Joined: " + code, Toast.LENGTH_SHORT).show();
-                            Log.i("HERE SETTINGS", "group joined: " + code);
-                        } else {
-                            Log.i("HERE SETTINGS", "failed to join group");
-                        }
-                    });
+                    // add user to group
+                    addUserToGroup(code);
                 } else {
-                    Toast.makeText(getContext(), "Already in this group", Toast.LENGTH_SHORT).show();
+                    // create new group and add user
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    String userId = user.getUid();
+                    groupReference.child(code).child("userIds").child(userId).setValue(true);
+                    Toast.makeText(getContext(), "Joined Group", Toast.LENGTH_SHORT).show();
+                    Log.i("HERE SETTINGS", "group joined");
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getContext(), "Database Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.i("HERE SETTINGS", "error add group: " + error.getMessage());
             }
         });
     }
+
+    // add user to existing group code database
+    private void addUserToGroup(String code) {
+        FirebaseUser user = mAuth.getCurrentUser();
+        String userId = user.getUid();
+        groupReference.child(code).child("userIds").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists() && snapshot.hasChild(userId)) {
+                    Toast.makeText(getContext(), "Already in Group", Toast.LENGTH_SHORT).show();
+                } else {
+                    groupReference.child(code).child("userIds").child(userId).setValue(true);
+                    Toast.makeText(getContext(), "Joined Group", Toast.LENGTH_SHORT).show();
+                    Log.i("HERE SETTINGS", "joined group");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.i("HERE SETTINGS", "error joining group: " + error.getMessage());
+            }
+        });
+    }
+
 }

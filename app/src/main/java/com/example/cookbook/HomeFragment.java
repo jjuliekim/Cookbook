@@ -1,5 +1,7 @@
 package com.example.cookbook;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -83,6 +85,8 @@ public class HomeFragment extends Fragment {
 
     // fetch from db recipes created by user
     private void fetchRecipesFromUser() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("page_prefs", Context.MODE_PRIVATE);
+        int savedPosition = sharedPreferences.getInt("sort_option", 0);
         recipeDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
