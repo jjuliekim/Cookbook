@@ -14,16 +14,19 @@ public class Recipe implements Parcelable {
     private ArrayList<String> ingredients;
     private ArrayList<String> steps;
     private ArrayList<String> favorited;
+    private String imageURL;
 
     public Recipe() {}
 
-    public Recipe(String id, String name, String user, ArrayList<String> ingredients, ArrayList<String> steps, ArrayList<String> favorited) {
+    public Recipe(String id, String name, String user, ArrayList<String> ingredients,
+                  ArrayList<String> steps, ArrayList<String> favorited, String imageURL) {
         this.id = id;
         this.name = name;
         this.user = user;
         this.ingredients = ingredients;
         this.steps = steps;
         this.favorited = favorited;
+        this.imageURL = imageURL;
     }
 
     public String getId() {
@@ -74,6 +77,14 @@ public class Recipe implements Parcelable {
         this.favorited = favorited;
     }
 
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
+
     protected Recipe(Parcel in) {
         id = in.readString();
         name = in.readString();
@@ -81,6 +92,7 @@ public class Recipe implements Parcelable {
         ingredients = in.createStringArrayList();
         steps = in.createStringArrayList();
         favorited = in.createStringArrayList();
+        imageURL = in.readString();
     }
 
     public static final Creator<Recipe> CREATOR = new Creator<Recipe>() {
@@ -108,5 +120,6 @@ public class Recipe implements Parcelable {
         dest.writeStringList(ingredients);
         dest.writeStringList(steps);
         dest.writeStringList(favorited);
+        dest.writeString(imageURL);
     }
 }

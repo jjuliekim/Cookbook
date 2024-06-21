@@ -1,13 +1,17 @@
 package com.example.cookbook;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -27,6 +31,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -45,6 +51,8 @@ public class NewFragment extends Fragment {
     private EditText firstStepText;
     private DatabaseReference databaseReference;
     private String userId;
+    private Uri imageUri;
+    private String imageURL;
 
     public NewFragment() {
     }
@@ -75,8 +83,26 @@ public class NewFragment extends Fragment {
         saveButton.setOnClickListener(v -> saveRecipe());
         addIngredientButton.setOnClickListener(v -> addIngredient());
         addStepButton.setOnClickListener(v -> addStep());
-        attachPhoto.setOnClickListener(v -> takePhoto());
+        attachPhoto.setOnClickListener(v -> chooseFile());
         return view;
+    }
+
+    // open intent to choose image
+    private void chooseFile() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, 1);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            imageUri = data.getData();
+            Toast.makeText(getContext(), "Image Selected", Toast.LENGTH_SHORT).show();
+            Log.i("HERE NEW", "image selected " + imageUri);
+        }
     }
 
     // search recipe info on API
@@ -128,7 +154,12 @@ public class NewFragment extends Fragment {
             }
         }
         String recipeId = databaseReference.push().getKey();
-        Recipe recipe = new Recipe(recipeId, recipeName, userId, ingredients, steps, new ArrayList<>());
+        if (imageUri != null) {
+            uploadImage(imageUri, recipeId);
+        } else {
+            imageURL = "";
+        }
+        Recipe recipe = new Recipe(recipeId, recipeName, userId, ingredients, steps, new ArrayList<>(), imageURL);
         databaseReference.child(recipeId).setValue(recipe).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Log.i("HERE NEW", "recipe saved");
@@ -195,7 +226,7 @@ public class NewFragment extends Fragment {
                     }
                     String recipeId = databaseReference.push().getKey();
                     Recipe recipe = new Recipe(recipeId, recipeInputText.getText().toString(), userId,
-                            ingredients, stepsList, new ArrayList<>());
+                            ingredients, stepsList, new ArrayList<>(), "");
                     databaseReference.child(recipeId).setValue(recipe).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Log.i("HERE NEW", "recipe saved");
@@ -242,6 +273,18 @@ public class NewFragment extends Fragment {
     private void takePhoto() {
         // save to some storage
 
+    }
+
+    // upload image to storage
+    private void uploadImage(Uri imageUri, String recipeId) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference("recipes/" + recipeId + ".jpg");
+        storageRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    imageURL = uri.toString();
+                    databaseReference.child(recipeId).child("imageURL").setValue(imageURL);
+                    Log.i("HERE NEW", "image url: " + imageURL);
+                }))
+                .addOnFailureListener(e -> Log.e("UPLOAD IMAGE", "Failed to upload image", e));
     }
 
 

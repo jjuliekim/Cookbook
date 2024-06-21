@@ -15,6 +15,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -57,10 +58,18 @@ public class DetailsActivity extends AppCompatActivity {
         fetchUserName();
         authorText.setText(String.format("Uploaded by: %s", username));
         imageView = findViewById(R.id.recipeImage);
+        setImage();
         Button shareButton = findViewById(R.id.shareButton);
         shareButton.setOnClickListener(v -> shareRecipe());
         favoriteButton = findViewById(R.id.favoriteButton);
         updateFavoriteButton();
+    }
+
+    // retrieve and display image
+    private void setImage() {
+        if (recipe.getImageURL() != null) {
+            Glide.with(this).load(recipe.getImageURL()).into(imageView);
+        }
     }
 
     private void updateFavoriteButton() {
