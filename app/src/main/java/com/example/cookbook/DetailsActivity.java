@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,8 @@ public class DetailsActivity extends AppCompatActivity {
     private Button favoriteButton;
     private String username;
     private DatabaseReference userReference;
+    private LinearLayout ingredientsLayout;
+    private LinearLayout stepsLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +66,32 @@ public class DetailsActivity extends AppCompatActivity {
         shareButton.setOnClickListener(v -> shareRecipe());
         favoriteButton = findViewById(R.id.favoriteButton);
         updateFavoriteButton();
+        ingredientsLayout = findViewById(R.id.ingredientsLayoutText);
+        stepsLayout = findViewById(R.id.stepsLayoutText);
+        setIngredients();
+        setSteps();
+    }
+
+    // fetch ingredients
+    private void setIngredients() {
+        ArrayList<String> ingredients = recipe.getIngredients();
+        ingredientsLayout.removeAllViews();
+        for (String ingredient : ingredients) {
+            TextView ingredientText = new TextView(this);
+            ingredientText.setText(String.format("- %s", ingredient));
+            ingredientsLayout.addView(ingredientText);
+        }
+    }
+
+    // fetch steps
+    private void setSteps() {
+        ArrayList<String> steps = recipe.getSteps();
+        stepsLayout.removeAllViews();
+        for (String step : steps) {
+            TextView stepTextView = new TextView(this);
+            stepTextView.setText(String.format("- %s", step));
+            stepsLayout.addView(stepTextView);
+        }
     }
 
     // retrieve and display image

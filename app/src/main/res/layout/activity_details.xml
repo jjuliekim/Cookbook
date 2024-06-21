@@ -63,26 +63,27 @@
                 android:text="@string/ingredients"
                 android:textSize="22sp" />
 
-            <TextView
-                android:id="@+id/ingredientsText"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:id="@+id/ingredientsLayoutText"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:layout_marginBottom="16dp" />
+                android:orientation="vertical">
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/stepsLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:text="@string/steps"
                 android:textSize="22sp" />
 
-            <TextView
-                android:id="@+id/stepsText"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:id="@+id/stepsLayoutText"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:layout_marginBottom="16dp" />
+                android:orientation="vertical">
+            </LinearLayout>
 
             <ImageView
                 android:id="@+id/recipeImage"
