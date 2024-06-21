@@ -141,7 +141,30 @@ public class DetailsActivity extends AppCompatActivity {
         });
     }
 
+    // share recipe details
     private void shareRecipe() {
+        String recipeName = recipe.getName();
+        String recipeAuthor = username;
+        ArrayList<String> ingredients = recipe.getIngredients();
+        ArrayList<String> steps = recipe.getSteps();
 
+        StringBuilder shareContent = new StringBuilder();
+        shareContent.append("Recipe Name: ").append(recipeName).append("\n");
+        shareContent.append("Uploaded by: ").append(recipeAuthor).append("\n");
+        shareContent.append("Ingredients:\n");
+        for (String ingredient : ingredients) {
+            shareContent.append("- ").append(ingredient).append("\n");
+        }
+        shareContent.append("\nSteps:\n");
+        for (String step : steps) {
+            shareContent.append("- ").append(step).append("\n");
+        }
+
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "New Recipe: " + recipeName);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareContent.toString());
+        startActivity(Intent.createChooser(shareIntent, "Share Recipe"));
     }
+
 }
