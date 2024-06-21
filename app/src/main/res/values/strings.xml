@@ -29,8 +29,5 @@
     <string name="share">Share</string>
     <string name="open"><![CDATA[Open >]]></string>
     <string name="favorited">Favorited</string>
-    <string-array name="sort_recipes">
-        <item>Alphabetical</item>
-        <item>Number of Steps</item>
-    </string-array>
+    <string name="your_groups">Your Groups:</string>
 </resources>

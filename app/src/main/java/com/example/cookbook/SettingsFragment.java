@@ -1,8 +1,5 @@
 package com.example.cookbook;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,11 +9,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +32,7 @@ public class SettingsFragment extends Fragment {
     private DatabaseReference groupReference;
     private DatabaseReference userReference;
     private FirebaseAuth mAuth;
+    private TableLayout groupCodeLayout;
 
     public SettingsFragment() {}
 
@@ -55,28 +52,8 @@ public class SettingsFragment extends Fragment {
         TextView createCodeText = view.findViewById(R.id.createCodeText);
         joinGroupButton.setOnClickListener(v -> addGroup(groupCodeText.getText().toString()));
         createCodeText.setOnClickListener(v -> createCode());
-        // creating spinner
-        Spinner spinner = view.findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                getContext(), R.array.sort_recipes, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        // save and load from shared preferences
-//        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("page_prefs", Context.MODE_PRIVATE);
-//        int savedPosition = sharedPreferences.getInt("sort_option", 0);
-//        spinner.setSelection(savedPosition);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                SharedPreferences.Editor editor = sharedPreferences.edit();
-//                editor.putInt("sort_option", position);
-//                editor.apply();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
-
+        groupCodeLayout = view.findViewById(R.id.groupCodeLayout);
+        fetchGroups();
         return view;
     }
 
@@ -211,5 +188,9 @@ public class SettingsFragment extends Fragment {
         });
     }
 
+    // list groups
+    private void fetchGroups() {
+
+    }
 
 }
