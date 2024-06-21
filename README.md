@@ -19,3 +19,4 @@ Password: "password"
 - Sort recipes option
 - Share recipe via email, text, etc.
 - Explore page (Lists recipes your group created)
+- Recipe details (steps and ingredients)
