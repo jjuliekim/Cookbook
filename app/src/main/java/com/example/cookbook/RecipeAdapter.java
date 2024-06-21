@@ -29,6 +29,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     private String userId;
     private FirebaseUser user;
     private String username;
+    private DatabaseReference userDatabase;
 
     public RecipeAdapter(Context context, ArrayList<Recipe> recipeList) {
         this.context = context;
@@ -41,6 +42,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recipe, parent, false);
         user = FirebaseAuth.getInstance().getCurrentUser();
         userId = user.getUid();
+        userDatabase = FirebaseDatabase.getInstance().getReference("users");
         return new RecipeViewHolder(view);
     }
 
@@ -49,7 +51,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         Recipe recipe = recipeList.get(position);
         if (recipe != null) {
             holder.nameText.setText(recipe.getName());
-            holder.authorText.setText(String.format("Created by: %s", username));
+            fetchUsername(recipe.getUser(), holder.authorText);
             holder.numberStepsText.setText(String.format("# Steps: %d", recipe.getSteps().size()));
             if (user != null) {
                 ArrayList<String> favorites = recipe.getFavorited();
@@ -70,6 +72,30 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         } else {
             Log.i("HERE ADAPTER", "Recipe at position " + position + " is null.");
         }
+    }
+
+    private void fetchUsername(String userId, TextView authorText) {
+        userDatabase.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    User user = snapshot.getValue(User.class);
+                    if (user != null) {
+                        username = user.getName();
+                        authorText.setText(String.format("Created by %s", username));
+                    } else {
+                        Log.i("HERE ADAPTER", "user null");
+                    }
+                } else {
+                    Log.i("HERE ADAPTER", "no data found for user");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.i("HERE ADAPTER", "get username e: " + error.getMessage());
+            }
+        });
     }
 
     public void setUsername(String username) {

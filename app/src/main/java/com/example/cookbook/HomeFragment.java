@@ -94,8 +94,6 @@ public class HomeFragment extends Fragment {
                     Recipe recipe = snapshot.getValue(Recipe.class);
                     if (recipe != null && user.getUid().equals(recipe.getUser())) {
                         recipeList.add(recipe);
-                    } else {
-                        Log.i("HERE HOME", "recipe or recipe user is null");
                     }
                 }
                 recipeAdapter.updateRecipes(recipeList);
