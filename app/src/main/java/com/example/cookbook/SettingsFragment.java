@@ -98,7 +98,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    // create new code
+                    // avoid repeated codes
                     createCode();
                 } else {
                     // display code for user
@@ -132,8 +132,9 @@ public class SettingsFragment extends Fragment {
                     FirebaseUser user = mAuth.getCurrentUser();
                     String userId = user.getUid();
                     groupReference.child(code).child("userIds").child(userId).setValue(true);
+                    addCodeToUser(code);
                     Toast.makeText(getContext(), "Joined Group", Toast.LENGTH_SHORT).show();
-                    Log.i("HERE SETTINGS", "group joined");
+                    Log.i("HERE SETTINGS", "new group joined");
                 }
             }
 
@@ -154,6 +155,7 @@ public class SettingsFragment extends Fragment {
                 if (snapshot.exists() && snapshot.hasChild(userId)) {
                     Toast.makeText(getContext(), "Already in Group", Toast.LENGTH_SHORT).show();
                 } else {
+                    addCodeToUser(code);
                     groupReference.child(code).child("userIds").child(userId).setValue(true);
                     Toast.makeText(getContext(), "Joined Group", Toast.LENGTH_SHORT).show();
                     Log.i("HERE SETTINGS", "joined group");
@@ -166,5 +168,47 @@ public class SettingsFragment extends Fragment {
             }
         });
     }
+
+    // add group code under "users" list of groups
+    private void addCodeToUser(String code) {
+        Log.i("HERE SETTINGS", "1");
+        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Log.i("HERE SETTINGS", "2");
+                if (snapshot.exists()) {
+                    User user = snapshot.getValue(User.class);
+                    if (user != null) {
+                        ArrayList<String> userGroups = user.getGroups();
+                        if (userGroups == null) {
+                            userGroups = new ArrayList<>();
+                        }
+                        if (!userGroups.contains(code)) {
+                            userGroups.add(code);
+                            user.setGroups(userGroups);
+                            Log.i("HERE SETTINGS", "groups: " + userGroups);
+                            Log.i("HERE SETTINGS", "user.getGroups()" + user.getGroups());
+                            userReference.setValue(user)
+                                    .addOnSuccessListener(e -> Log.i("HERE SETTINGS", "Group code added to user's groups"))
+                                    .addOnFailureListener(e -> Log.e("HERE SETTINGS", "Error adding group code to user's groups: " + e.getMessage()));
+                        } else {
+                            // The group code is already in the user's groups list
+                            Log.i("HERE SETTINGS", "Group code already exists in user's groups");
+                        }
+                    } else {
+                        Log.e("HERE SETTINGS", "User object is null");
+                    }
+                } else {
+                    Log.e("HERE SETTINGS", "Snapshot does not exist");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.i("HERE SETTINGS", "error adding group code to user: " + error.getMessage());
+            }
+        });
+    }
+
 
 }
