@@ -30,7 +30,6 @@ public class HomeFragment extends Fragment {
     private RecipeAdapter recipeAdapter;
     private DatabaseReference recipeDatabase;
     private ArrayList<Recipe> recipeList;
-    private String userName;
     private DatabaseReference userReference;
 
     public HomeFragment() {}
@@ -68,9 +67,9 @@ public class HomeFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
                 if (user != null) {
-                    userName = user.getName();
-                    Log.i("HERE NEW", "fetched username: " + userName);
+                    String username = user.getName();
                     fetchRecipesFromUser();
+                    recipeAdapter.setUsername(username);
                 } else {
                     Log.i("HERE NEW", "User data is null");
                 }
@@ -91,10 +90,9 @@ public class HomeFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 recipeList = new ArrayList<>();
-                Log.i("HERE HOME", "username to fetch from: " + userName);
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Recipe recipe = snapshot.getValue(Recipe.class);
-                    if (recipe != null && userName != null && userName.equals(recipe.getUser())) {
+                    if (recipe != null && user.getUid().equals(recipe.getUser())) {
                         recipeList.add(recipe);
                     } else {
                         Log.i("HERE HOME", "recipe or recipe user is null");

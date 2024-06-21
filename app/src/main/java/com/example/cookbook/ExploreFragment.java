@@ -31,8 +31,8 @@ public class ExploreFragment extends Fragment {
     private DatabaseReference userDatabase;
     private DatabaseReference groupDatabase;
     private ArrayList<Recipe> recipeList;
-    private Set<String> usersGroups;
-    private Set<String> groupUsers;
+    private Set<String> usersGroups; // groups the user is in
+    private Set<String> groupUsers; // users who are also members of the group
 
     public ExploreFragment() {
     }
@@ -52,7 +52,6 @@ public class ExploreFragment extends Fragment {
         userDatabase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
         groupDatabase = FirebaseDatabase.getInstance().getReference("groups");
         fetchUserName();
-        fetchRecipesFromGroups();
         // set recycler view
         recipeAdapter = new RecipeAdapter(getContext(), new ArrayList<>());
         RecyclerView recyclerView = view.findViewById(R.id.exploreRecyclerView);
@@ -72,6 +71,7 @@ public class ExploreFragment extends Fragment {
                 }
                 Log.i("HERE EXPLORE", "fetched groups: " + usersGroups);
                 fetchGroupUsers();
+                fetchRecipesFromGroups();
             }
 
             @Override
@@ -83,6 +83,10 @@ public class ExploreFragment extends Fragment {
 
     // get users in the same group as the current user
     private void fetchGroupUsers() {
+        if (usersGroups.isEmpty()) {
+            fetchRecipesFromGroups();
+            return;
+        }
         for (String code : usersGroups) {
             groupDatabase.child(code).child("userIds").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -90,7 +94,6 @@ public class ExploreFragment extends Fragment {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         groupUsers.add(snapshot.getKey());
                     }
-                    fetchRecipesFromGroups();
                 }
 
                 @Override

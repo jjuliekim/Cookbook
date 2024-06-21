@@ -26,7 +26,6 @@ import java.util.ArrayList;
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
     private final ArrayList<Recipe> recipeList;
     private final Context context;
-    private DatabaseReference userReference;
     private String userId;
     private FirebaseUser user;
     private String username;
@@ -42,7 +41,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recipe, parent, false);
         user = FirebaseAuth.getInstance().getCurrentUser();
         userId = user.getUid();
-        userReference = FirebaseDatabase.getInstance().getReference("users").child(userId);
         return new RecipeViewHolder(view);
     }
 
@@ -51,7 +49,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         Recipe recipe = recipeList.get(position);
         if (recipe != null) {
             holder.nameText.setText(recipe.getName());
-            fetchUserName();
             holder.authorText.setText(String.format("Created by: %s", username));
             holder.numberStepsText.setText(String.format("# Steps: %d", recipe.getSteps().size()));
             if (user != null) {
@@ -75,23 +72,9 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         }
     }
 
-    // get username from database
-    private void fetchUserName() {
-        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                if (user != null) {
-                    username = user.getName();
-                    Log.i("HERE NEW", "fetched username: " + user.getName());
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.i("HERE NEW", "getting username failed", error.toException());
-            }
-        });
+    public void setUsername(String username) {
+        this.username = username;
+        notifyDataSetChanged();
     }
 
     @Override
