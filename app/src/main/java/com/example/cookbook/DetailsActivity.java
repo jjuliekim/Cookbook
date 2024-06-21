@@ -37,6 +37,7 @@ public class DetailsActivity extends AppCompatActivity {
     private DatabaseReference userReference;
     private LinearLayout ingredientsLayout;
     private LinearLayout stepsLayout;
+    private TextView authorText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +58,8 @@ public class DetailsActivity extends AppCompatActivity {
 
         TextView nameText = findViewById(R.id.dishNameText);
         nameText.setText(recipe.getName());
-        TextView authorText = findViewById(R.id.dishAuthorText);
+        authorText = findViewById(R.id.dishAuthorText);
         fetchUserName();
-        authorText.setText(String.format("Uploaded by: %s", username));
         imageView = findViewById(R.id.recipeImage);
         setImage();
         Button shareButton = findViewById(R.id.shareButton);
@@ -77,8 +77,12 @@ public class DetailsActivity extends AppCompatActivity {
         ArrayList<String> ingredients = recipe.getIngredients();
         ingredientsLayout.removeAllViews();
         for (String ingredient : ingredients) {
+            if (ingredient == null || ingredient.equals("null")) {
+                break;
+            }
             TextView ingredientText = new TextView(this);
             ingredientText.setText(String.format("- %s", ingredient));
+            ingredientText.setTextSize(18);
             ingredientsLayout.addView(ingredientText);
         }
     }
@@ -88,9 +92,13 @@ public class DetailsActivity extends AppCompatActivity {
         ArrayList<String> steps = recipe.getSteps();
         stepsLayout.removeAllViews();
         for (String step : steps) {
-            TextView stepTextView = new TextView(this);
-            stepTextView.setText(String.format("- %s", step));
-            stepsLayout.addView(stepTextView);
+            if (step == null || step.equals("null")) {
+                break;
+            }
+            TextView stepText = new TextView(this);
+            stepText.setText(String.format("- %s", step));
+            stepText.setTextSize(18);
+            stepsLayout.addView(stepText);
         }
     }
 
@@ -159,6 +167,7 @@ public class DetailsActivity extends AppCompatActivity {
                 User user = dataSnapshot.getValue(User.class);
                 if (user != null) {
                     username = user.getName();
+                    authorText.setText(String.format("Uploaded by: %s", username));
                     Log.i("HERE NEW", "fetched username: " + user.getName());
                 }
             }
