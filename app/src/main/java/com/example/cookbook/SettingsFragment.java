@@ -1,8 +1,10 @@
 package com.example.cookbook;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -19,6 +22,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -28,6 +32,7 @@ public class SettingsFragment extends Fragment {
     private DatabaseReference userReference;
     private FirebaseAuth mAuth;
     private LinearLayout groupCodeLayout;
+    private TextView numberRecipeText;
 
     public SettingsFragment() {
     }
@@ -43,6 +48,8 @@ public class SettingsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
+        numberRecipeText = view.findViewById(R.id.numberRecipesText);
+        countRecipes();
         groupCodeText = view.findViewById(R.id.groupCodeText);
         Button joinGroupButton = view.findViewById(R.id.joinGroupButton);
         TextView createCodeText = view.findViewById(R.id.createCodeText);
@@ -51,6 +58,32 @@ public class SettingsFragment extends Fragment {
         groupCodeLayout = view.findViewById(R.id.groupCodeLayout);
         fetchGroups();
         return view;
+    }
+
+    // display number of recipes created by user
+    private void countRecipes() {
+        DatabaseReference recipeDatabase = FirebaseDatabase.getInstance().getReference("recipes");
+        FirebaseUser user = mAuth.getCurrentUser();
+        String userId = user.getUid();
+        recipeDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int recipeCount = 0;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Recipe recipe = snapshot.getValue(Recipe.class);
+                    if (recipe != null && userId.equals(recipe.getUser())) {
+                        recipeCount++;
+                    }
+                }
+                numberRecipeText.setText(String.format("Number of Recipes Created: %d", recipeCount));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.i("HERE SETTINGS", "failed to count recipes");
+                Toast.makeText(getContext(), "Failed to count recipes", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     // generate group code for user
@@ -100,7 +133,7 @@ public class SettingsFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 groupCodeText.setText("");
                 if (snapshot.exists()) {
-                    // add user to group
+                    // group already exists, add user
                     addUserToGroup(code);
                 } else {
                     // create new group and add user
@@ -207,7 +240,7 @@ public class SettingsFragment extends Fragment {
         });
     }
 
-    // Fetch usernames from user IDs and display them in groupCodeLayout
+    // fetch usernames from user IDs and display them in groupCodeLayout
     private void fetchUsernamesAndDisplay(String groupId, ArrayList<String> userIds) {
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         ArrayList<String> usernames = new ArrayList<>();
@@ -237,7 +270,7 @@ public class SettingsFragment extends Fragment {
         }
     }
 
-    // Update the TextView immediately after joining a group
+    // update UI
     private void updateGroupTextView(String code) {
         groupReference.child(code).child("userIds").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

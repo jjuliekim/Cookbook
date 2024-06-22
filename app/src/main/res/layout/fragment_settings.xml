@@ -12,9 +12,14 @@
         android:padding="30dp"
         android:orientation="vertical">
 
-        <Space
+        <TextView
+            android:id="@+id/numberRecipesText"
+            android:layout_marginTop="50dp"
             android:layout_width="match_parent"
-            android:layout_height="100dp" />
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:layout_marginBottom="100dp"
+            android:text="@string/textview" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -53,6 +58,7 @@
             android:textSize="24sp"
             android:layout_marginTop="80dp"
             android:textStyle="bold"
+            android:textColor="#43540B"
             android:text="@string/your_groups" />
 
         <LinearLayout
