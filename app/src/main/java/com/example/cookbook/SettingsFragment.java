@@ -35,7 +35,8 @@ public class SettingsFragment extends Fragment {
     private FirebaseAuth mAuth;
     private LinearLayout groupCodeLayout;
 
-    public SettingsFragment() {}
+    public SettingsFragment() {
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -183,62 +184,60 @@ public class SettingsFragment extends Fragment {
 
     // fetch groups and group members
     private void fetchGroups() {
-        userReference.child("groups").addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference groupsRef = FirebaseDatabase.getInstance().getReference("groups");
+        groupsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot groupSnapshot : dataSnapshot.getChildren()) {
-                    String groupId = groupSnapshot.getKey();
-                    groupReference.child(groupId).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (snapshot.exists()) {
-                                StringBuilder membersStringBuilder = new StringBuilder();
-                                for (DataSnapshot userSnapshot : snapshot.child("userIds").getChildren()) {
-                                    String userId = userSnapshot.getKey();
-                                    fetchUsername(userId, membersStringBuilder);
-                                }
-                                String groupText = groupId + ": " + membersStringBuilder.toString();
-                                TextView groupTextView = new TextView(getContext());
-                                groupTextView.setText(groupText);
-                                groupTextView.setTextSize(18);
-                                groupCodeLayout.addView(groupTextView);
-                            }
+                    String groupId = groupSnapshot.getKey(); // Get the group ID
+                    Log.i("HERE SETTINGS", "Processing group ID: " + groupId);
+
+                    // Check if the group has userIds
+                    if (groupSnapshot.hasChild("userIds")) {
+                        DataSnapshot userIdsSnapshot = groupSnapshot.child("userIds");
+                        for (DataSnapshot userSnapshot : userIdsSnapshot.getChildren()) {
+                            String userId = userSnapshot.getKey(); // Get the user ID
+                            Log.i("HERE SETTINGS", "User ID in group " + groupId + ": " + userId);
+                            // Process user ID as needed
+                            fetchUsernameAndDisplay(groupId, userId); // Fetch username and display it
                         }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Log.e("SettingsFragment", "Error fetching group details: " + error.getMessage());
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("SettingsFragment", "Error fetching user groups: " + error.getMessage());
-            }
-        });
-    }
-
-    // fetch username from user id
-    private void fetchUsername(String userId, StringBuilder membersStringBuilder) {
-        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String username = dataSnapshot.child("name").getValue(String.class);
-                if (username != null) {
-                    membersStringBuilder.append(username).append(", ");
-                    Log.i("HERE SETTINGS", "getting username: " + username);
+                    } else {
+                        Log.i("HERE SETTINGS", "Group " + groupId + " does not have userIds");
+                    }
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("SettingsFragment", "Error fetching user: " + databaseError.getMessage());
+                Log.e("HERE SETTINGS", "Error fetching groups: " + databaseError.getMessage());
             }
         });
     }
+
+    // Fetch username from user ID and display it in groupCodeLayout
+    private void fetchUsernameAndDisplay(String groupId, String userId) {
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String username = dataSnapshot.child("name").getValue(String.class);
+                Log.i("HERE SETTINGS", "Getting username: " + username);
+
+                // Create a TextView to display group code and username
+                String groupText = groupId + ": " + username;
+                TextView groupTextView = new TextView(getContext());
+                groupTextView.setText(groupText);
+                groupTextView.setTextSize(18);
+                groupCodeLayout.addView(groupTextView); // Add TextView to groupCodeLayout
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("HERE SETTINGS", "Error fetching user: " + databaseError.getMessage());
+            }
+        });
+    }
+
 
 
 }
