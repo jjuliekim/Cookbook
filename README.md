@@ -17,3 +17,4 @@ Password: "password"
 - Click on recipes on Home or Explore page to view specific recipe details
 - Upload a picture for each recipe
 - Share recipe via email, text, etc.
+- Favorite/Like recipes
