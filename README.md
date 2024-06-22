@@ -4,6 +4,7 @@
 
 Username: "username" \
 Password: "password"
+(test group code: VDA02W)
 
 ### Implemented Features
 - Log in / Register Account
