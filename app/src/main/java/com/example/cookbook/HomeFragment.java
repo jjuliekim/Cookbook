@@ -94,6 +94,13 @@ public class HomeFragment extends Fragment {
                         recipeList.add(recipe);
                     }
                 }
+                // sort to show favorites first
+                recipeList.sort((r1, r2) -> {
+                    boolean r1Favorited = r1.getFavorited() != null && r1.getFavorited().contains(user.getUid());
+                    boolean r2Favorited = r2.getFavorited() != null && r2.getFavorited().contains(user.getUid());
+                    return Boolean.compare(r2Favorited, r1Favorited);
+                });
+
                 recipeAdapter.updateRecipes(recipeList);
             }
 
