@@ -3,7 +3,7 @@
 ### Test Account
 
 Username: "username" \
-Password: "password"
+Password: "password" \
 (test group code: VDA02W)
 
 ### Implemented Features
