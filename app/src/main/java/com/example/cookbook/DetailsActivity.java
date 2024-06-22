@@ -34,7 +34,6 @@ public class DetailsActivity extends AppCompatActivity {
     private DatabaseReference recipeDatabase;
     private Button favoriteButton;
     private String username;
-    private DatabaseReference userReference;
     private LinearLayout ingredientsLayout;
     private LinearLayout stepsLayout;
     private TextView authorText;
@@ -53,7 +52,6 @@ public class DetailsActivity extends AppCompatActivity {
         recipe = myIntent.getParcelableExtra("recipe");
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         userId = user.getUid();
-        userReference = FirebaseDatabase.getInstance().getReference("users").child(userId);
         recipeDatabase = FirebaseDatabase.getInstance().getReference("recipes");
 
         TextView nameText = findViewById(R.id.dishNameText);
@@ -161,7 +159,8 @@ public class DetailsActivity extends AppCompatActivity {
 
     // get username from database
     private void fetchUserName() {
-        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference authorReference = FirebaseDatabase.getInstance().getReference("users").child(recipe.getUser());
+        authorReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
