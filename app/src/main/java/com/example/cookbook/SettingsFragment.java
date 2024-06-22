@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +33,7 @@ public class SettingsFragment extends Fragment {
     private DatabaseReference groupReference;
     private DatabaseReference userReference;
     private FirebaseAuth mAuth;
-    private TableLayout groupCodeLayout;
+    private LinearLayout groupCodeLayout;
 
     public SettingsFragment() {}
 
@@ -149,11 +150,9 @@ public class SettingsFragment extends Fragment {
 
     // add group code under "users" list of groups
     private void addCodeToUser(String code) {
-        Log.i("HERE SETTINGS", "1");
         userReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.i("HERE SETTINGS", "2");
                 if (snapshot.exists()) {
                     User user = snapshot.getValue(User.class);
                     if (user != null) {
@@ -164,8 +163,6 @@ public class SettingsFragment extends Fragment {
                         if (!userGroups.contains(code)) {
                             userGroups.add(code);
                             user.setGroups(userGroups);
-                            Log.i("HERE SETTINGS", "groups: " + userGroups);
-                            Log.i("HERE SETTINGS", "user.getGroups()" + user.getGroups());
                             userReference.setValue(user)
                                     .addOnSuccessListener(e -> Log.i("HERE SETTINGS", "Group code added to user's groups"))
                                     .addOnFailureListener(e -> Log.e("HERE SETTINGS", "Error adding group code to user's groups: " + e.getMessage()));
@@ -173,24 +170,75 @@ public class SettingsFragment extends Fragment {
                             // The group code is already in the user's groups list
                             Log.i("HERE SETTINGS", "Group code already exists in user's groups");
                         }
-                    } else {
-                        Log.e("HERE SETTINGS", "User object is null");
                     }
-                } else {
-                    Log.e("HERE SETTINGS", "Snapshot does not exist");
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.i("HERE SETTINGS", "error adding group code to user: " + error.getMessage());
+                Log.i("HERE SETTINGS", "error adding group code: " + error.getMessage());
             }
         });
     }
 
-    // list groups
+    // fetch groups and group members
     private void fetchGroups() {
+        userReference.child("groups").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot groupSnapshot : dataSnapshot.getChildren()) {
+                    String groupId = groupSnapshot.getKey();
+                    groupReference.child(groupId).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                StringBuilder membersStringBuilder = new StringBuilder();
+                                for (DataSnapshot userSnapshot : snapshot.child("userIds").getChildren()) {
+                                    String userId = userSnapshot.getKey();
+                                    fetchUsername(userId, membersStringBuilder);
+                                }
+                                String groupText = groupId + ": " + membersStringBuilder.toString();
+                                TextView groupTextView = new TextView(getContext());
+                                groupTextView.setText(groupText);
+                                groupTextView.setTextSize(18);
+                                groupCodeLayout.addView(groupTextView);
+                            }
+                        }
 
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Log.e("SettingsFragment", "Error fetching group details: " + error.getMessage());
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("SettingsFragment", "Error fetching user groups: " + error.getMessage());
+            }
+        });
     }
+
+    // fetch username from user id
+    private void fetchUsername(String userId, StringBuilder membersStringBuilder) {
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String username = dataSnapshot.child("name").getValue(String.class);
+                if (username != null) {
+                    membersStringBuilder.append(username).append(", ");
+                    Log.i("HERE SETTINGS", "getting username: " + username);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("SettingsFragment", "Error fetching user: " + databaseError.getMessage());
+            }
+        });
+    }
+
 
 }
