@@ -12,9 +12,8 @@ Password: "password"
 - New recipe page (Create and upload recipe)
 - Settings page (User preferences and create/join group)
 - Recipe Details (View ingredients, steps, and images)
-- Join any number of groups 
+- Join any number of groups and view group members' names
 - Create your own recipe or search for existing recipes (fills in instructions/steps for you)
 - Click on recipes on Home or Explore page to view specific recipe details
 - Upload a picture for each recipe
-- Sort recipes option
 - Share recipe via email, text, etc.
